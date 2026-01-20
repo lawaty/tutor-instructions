@@ -1,0 +1,13 @@
+# AI Tutor Progress (Personal)
+.ai/tutor-progress.md
+
+# IDE & Editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
