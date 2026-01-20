@@ -14,33 +14,26 @@ When integrated into your project, the AI will:
 
 ## 🚀 Quick Start
 
-### Option 1: Clone into New Project
+### ⭐ Recommended Method
 
 ```bash
-# Clone this repo into your project's .ai directory
+# Navigate to your project
+cd /path/to/your/project
+
+# Clone and setup
 git clone https://github.com/lawaty/tutor-instructions.git .ai/tutor-instructions
-
-# Copy the instructions file to .ai directory
-cp .ai/tutor-instructions/tutor-instructions.md .ai/tutor-instructions.md
-
-# Add to .github/copilot-instructions.md (or create if doesn't exist)
-cat .ai/tutor-instructions/tutor-instructions.md >> .github/copilot-instructions.md
+bash .ai/tutor-instructions/setup.sh
 ```
 
-### Option 2: Use Setup Script
+This ensures you get the latest version and the setup script can find all necessary files.
 
-```bash
-# From your project root
-curl -fsSL https://raw.githubusercontent.com/lawaty/tutor-instructions/main/setup.sh | bash
-```
+### Alternative Methods
 
-### Option 3: Manual Setup
-
-1. Create `.ai` directory in your project root
-2. Copy `tutor-instructions.md` to `.ai/tutor-instructions.md`
-3. Either:
-   - Add the contents to `.github/copilot-instructions.md`, OR
-   - Reference it in your GitHub Copilot settings
+See **[INSTALL.md](INSTALL.md)** for:
+- Direct curl/wget installation
+- Manual setup steps
+- Troubleshooting common issues
+- Setup verification
 
 ## 📁 What Gets Created
 
