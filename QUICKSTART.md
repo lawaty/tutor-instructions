@@ -6,7 +6,7 @@
 cd /path/to/your/project
 
 # Download and run setup script
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/tutor-instructions/main/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/lawaty/tutor-instructions/main/setup.sh | bash
 ```
 
 ### Method 2: Manual Clone
@@ -15,7 +15,7 @@ curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/tutor-instructions/ma
 cd /path/to/your/project
 
 # Clone into .ai directory
-git clone https://github.com/YOUR_USERNAME/tutor-instructions.git .ai/tutor-instructions
+git clone https://github.com/lawaty/tutor-instructions.git .ai/tutor-instructions
 
 # Copy instructions
 cp .ai/tutor-instructions/tutor-instructions.md .ai/
@@ -28,7 +28,7 @@ cat .ai/tutor-instructions.md >> .github/copilot-instructions.md
 ### Method 3: Git Submodule (Advanced)
 ```bash
 # Add as submodule
-git submodule add https://github.com/YOUR_USERNAME/tutor-instructions.git .ai/tutor-instructions
+git submodule add https://github.com/lawaty/tutor-instructions.git .ai/tutor-instructions
 
 # Link the instructions file
 cp .ai/tutor-instructions/tutor-instructions.md .ai/
@@ -73,7 +73,7 @@ Use the same tutor system across projects:
 ```bash
 # In each project
 cd /path/to/project
-git clone https://github.com/YOUR_USERNAME/tutor-instructions.git .ai/tutor-instructions
+git clone https://github.com/lawaty/tutor-instructions.git .ai/tutor-instructions
 cp .ai/tutor-instructions/tutor-instructions.md .ai/
 ```
 
@@ -100,6 +100,6 @@ cp .ai/tutor-instructions/tutor-instructions.md .ai/
 
 ## Need Help?
 
-- **Issues:** https://github.com/YOUR_USERNAME/tutor-instructions/issues
-- **Discussions:** https://github.com/YOUR_USERNAME/tutor-instructions/discussions
+- **Issues:** https://github.com/lawaty/tutor-instructions/issues
+- **Discussions:** https://github.com/lawaty/tutor-instructions/discussions
 - **Contributing:** See CONTRIBUTING.md

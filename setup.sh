@@ -21,7 +21,7 @@ if [ ! -d "$PROJECT_ROOT/.ai" ]; then
 fi
 
 # Download or copy tutor instructions
-TUTOR_INSTRUCTIONS_URL="https://raw.githubusercontent.com/YOUR_USERNAME/tutor-instructions/main/tutor-instructions.md"
+TUTOR_INSTRUCTIONS_URL="https://raw.githubusercontent.com/lawaty/tutor-instructions/main/tutor-instructions.md"
 
 echo "📥 Installing tutor instructions..."
 
