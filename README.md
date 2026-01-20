@@ -18,7 +18,7 @@ When integrated into your project, the AI will:
 
 ```bash
 # Clone this repo into your project's .ai directory
-git clone https://github.com/YOUR_USERNAME/tutor-instructions.git .ai/tutor-instructions
+git clone https://github.com/lawaty/tutor-instructions.git .ai/tutor-instructions
 
 # Copy the instructions file to .ai directory
 cp .ai/tutor-instructions/tutor-instructions.md .ai/tutor-instructions.md
@@ -31,7 +31,7 @@ cat .ai/tutor-instructions/tutor-instructions.md >> .github/copilot-instructions
 
 ```bash
 # From your project root
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/tutor-instructions/main/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/lawaty/tutor-instructions/main/setup.sh | bash
 ```
 
 ### Option 3: Manual Setup
@@ -170,6 +170,6 @@ MIT License - Feel free to use and modify for your projects.
 
 ## 🔗 Links
 
-- [GitHub Repository](https://github.com/YOUR_USERNAME/tutor-instructions)
-- [Documentation](https://github.com/YOUR_USERNAME/tutor-instructions/wiki)
-- [Issues](https://github.com/YOUR_USERNAME/tutor-instructions/issues)
+- [GitHub Repository](https://github.com/lawaty/tutor-instructions)
+- [Documentation](https://github.com/lawaty/tutor-instructions/wiki)
+- [Issues](https://github.com/lawaty/tutor-instructions/issues)
