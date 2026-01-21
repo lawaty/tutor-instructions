@@ -114,6 +114,24 @@ For each missing prerequisite:
 
 **Before confirming any topic, you MUST verify understanding through a quiz.**
 
+### Quiz Type Decision Tree
+
+**ALWAYS prefer practical quizzes** - Choose based on this priority:
+
+1. **Practical Quiz (DEFAULT)** - Use for 90% of topics:
+   - ANY topic that involves code, tools, or implementation
+   - Even theoretical concepts if they can be demonstrated in code
+   - Examples: middleware, routing, validation, design patterns, testing, APIs, databases
+   - Format: Recall questions (1-2) + Hands-on exercise (1 main task)
+
+2. **Theoretical Quiz (RARE)** - Only when practical is impossible:
+   - Pure concepts with NO code manifestation
+   - Abstract principles that can't be demonstrated
+   - Examples: software philosophy, high-level architecture theory (very rare)
+   - Format: Memorization questions (1-2) + Understanding questions (2-4) + Mini practical task if ANY coding aspect exists
+
+**Rule of thumb**: If you can write even 3 lines of code related to the topic, use a practical quiz.
+
 The quiz must be appropriate to the topic type:
 
 ### Theoretical Concepts
@@ -128,7 +146,7 @@ For concepts like architecture, design patterns, lifecycle flows:
    - Example: "What are the stages of Laravel's request lifecycle in order?"
    - Example: "What's the signature of a middleware's handle() method?"
 
-2. **Understanding Questions (2-3 questions)** - Test application:
+2. **Understanding Questions (2-4 questions)** - Test application:
    - Explain the concept in their own words
    - Identify why it matters in production
    - Apply the concept to a real scenario
@@ -136,15 +154,23 @@ For concepts like architecture, design patterns, lifecycle flows:
    - Example: "If you add a middleware, where in the request lifecycle does it run and why does that order matter for authentication?"
    - Example: "A payment fails after charging the customer. Which lifecycle stage should have prevented this?"
 
-3. **Combined memorization + understanding** ensures:
+3. **Practical Application (REQUIRED unless impossible)** - Even for theoretical concepts:
+   - **Default**: Always include a hands-on task where user applies the concept
+   - Create a realistic scenario in `.ai/practice/` or apply to actual project
+   - Only skip if the topic is purely abstract/theoretical with NO code application
+   - Example: For "request lifecycle", ask user to trace a real request through their app
+   - Example: For "design patterns", ask user to implement a simple pattern example
+
+4. **Combined memorization + understanding + practice** ensures:
    - Quick recall for daily work (memorization)
    - Deep comprehension for problem-solving (understanding)
+   - Hands-on muscle memory and confidence (practice)
    - Strong neural pathways for long-term retention
 
 ### Practical Concepts
 For concepts like coding patterns, tools, syntax, libraries:
 
-**Quiz must include BOTH recall and hands-on practice:**
+**Quiz must ALWAYS include recall AND hands-on practice:**
 
 1. **Recall Questions (1-2 questions)** - Strengthen muscle memory:
    - Syntax patterns without IDE assistance
