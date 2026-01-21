@@ -104,14 +104,17 @@ For each missing prerequisite:
 
 1. **Create a comprehensive lesson document** at `.ai/lessons/[topic-name].md`
    - Write an **elaborative, detailed explanation** (not just 2-3 paragraphs)
-   - If teaching from a book, **quote or reference entire relevant sections**
+   - **MANDATORY**: Include proper source attribution and references (see Reference Requirements below)
+   - If teaching from a book, **quote entire relevant sections verbatim** with page numbers
    - Include multiple examples progressing from simple to complex
    - Add diagrams, code snippets, and real-world scenarios
    - Structure: Introduction → Core Concepts → Examples → Common Pitfalls → Best Practices
+   - **Every lesson MUST have a "Book References" section** with direct quotes
    
 2. **Present the lesson** to the user:
    - Summarize key points in chat (3-5 main takeaways)
    - Direct user to the full lesson file for comprehensive study
+   - Mention the source material: "I've created a detailed lesson from [Book], Chapter X"
    - Encourage user to read the lesson document before proceeding to quiz
    
 3. **Explain why the concept matters** in production context
@@ -120,6 +123,7 @@ For each missing prerequisite:
    - If from a book: "See Chapter 5, Section 3.2: 'Middleware Pipeline' (pages 87-94)"
    - Include direct quotes of important definitions or rules
    - Cite page numbers and section titles for future reference
+   - **Never teach without proper attribution**
    
 5. **MANDATORY: Conduct a quiz/verification** (see QUIZ SYSTEM below)
    - Only after user has had time to review the lesson
@@ -213,10 +217,51 @@ Each `.ai/lessons/[topic-name].md` should include:
 
 1. **Be thorough, not brief**: A good lesson is 200-500 lines, not 20-50
 2. **Quote extensively from books**: Don't just summarize - include actual text from authoritative sources
-3. **Multiple examples**: Show the concept in 3-5 different contexts
-4. **Visual aids**: Use ASCII diagrams, flowcharts, or structured representations when helpful
-5. **Progressive complexity**: Start simple, build to advanced usage
-6. **Real code**: Include full working code examples, not pseudo-code snippets
+3. **ALWAYS include references**: Every lesson MUST have a "Book References" section with:
+   - Specific chapter and page numbers
+   - Direct quotes from the source material
+   - Author citations
+   - Even if teaching from online docs, cite the specific URLs and sections
+4. **Multiple examples**: Show the concept in 3-5 different contexts
+5. **Visual aids**: Use ASCII diagrams, flowcharts, or structured representations when helpful
+6. **Progressive complexity**: Start simple, build to advanced usage
+7. **Real code**: Include full working code examples, not pseudo-code snippets
+
+### Reference Requirements
+
+**Every lesson document MUST include:**
+
+1. **Source attribution** at the top:
+   ```markdown
+   **Source**: [Book Title] by [Author], Chapter X, Section Y (pages Z-W)
+   **Additional Sources**: [Any supplementary materials]
+   ```
+
+2. **Book References section** with direct quotes:
+   ```markdown
+   ## Book References
+   
+   > **From [Book Name], Page X (Chapter Y: Section Title):**
+   > "[Verbatim quote of important definition, rule, or explanation]"
+   > 
+   > Author emphasizes: "[Another relevant quote]"
+   
+   > **From [Book Name], Page Z:**
+   > "[Technical specification or pattern described in the book]"
+   ```
+
+3. **Cite every major concept** introduced:
+   - When introducing a term: "According to [Book], page X, [concept] is defined as..."
+   - When explaining patterns: "As described in Chapter Y, Section Z..."
+   - When showing examples: "This example is adapted from [Book], page W..."
+
+4. **If no book source exists**:
+   - Use official documentation with full URLs
+   - Cite RFC numbers for protocols
+   - Reference framework/library version numbers
+   - Include publication dates
+
+**Never teach without attribution** - users must be able to verify and dive deeper into source material.
 
 ──────────────────────────────
 4.1 QUIZ SYSTEM (MANDATORY)
