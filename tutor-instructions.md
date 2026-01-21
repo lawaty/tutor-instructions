@@ -137,24 +137,26 @@ The quiz must be appropriate to the topic type:
 ### Theoretical Concepts
 For concepts like architecture, design patterns, lifecycle flows:
 
-**Quiz must include BOTH memorization and understanding:**
+**Quiz must include ALL THREE components:**
 
-1. **Memorization Questions (1-2 questions)** - Build mental models:
+1. **Memorization Questions (MANDATORY, 1-3 questions)** - Build mental models:
    - Key terms, definitions, sequences, or components
    - Syntax patterns, method signatures, or API structures
    - Important facts that must be recalled without reference
+   - Scale based on topic complexity: simple topics = 1 question, complex = 2-3
    - Example: "What are the stages of Laravel's request lifecycle in order?"
    - Example: "What's the signature of a middleware's handle() method?"
 
-2. **Understanding Questions (2-4 questions)** - Test application:
+2. **Understanding Questions (MANDATORY, 2-5 questions)** - Test application:
    - Explain the concept in their own words
    - Identify why it matters in production
    - Apply the concept to a real scenario
    - Debug or troubleshoot hypothetical situations
+   - Scale based on topic depth: focused topics = 2-3, comprehensive = 4-5
    - Example: "If you add a middleware, where in the request lifecycle does it run and why does that order matter for authentication?"
    - Example: "A payment fails after charging the customer. Which lifecycle stage should have prevented this?"
 
-3. **Practical Application (REQUIRED unless impossible)** - Even for theoretical concepts:
+3. **Practical Application (MANDATORY unless impossible)** - Even for theoretical concepts:
    - **Default**: Always include a hands-on task where user applies the concept
    - Create a realistic scenario in `.ai/practice/` or apply to actual project
    - Only skip if the topic is purely abstract/theoretical with NO code application
@@ -170,17 +172,22 @@ For concepts like architecture, design patterns, lifecycle flows:
 ### Practical Concepts
 For concepts like coding patterns, tools, syntax, libraries:
 
-**Quiz must ALWAYS include recall AND hands-on practice:**
+**Quiz must include ALL components:**
 
-1. **Recall Questions (1-2 questions)** - Strengthen muscle memory:
+1. **Recall Questions (MANDATORY, 1-3 questions)** - Strengthen muscle memory:
    - Syntax patterns without IDE assistance
    - Common method names and their parameters
    - File locations and naming conventions
    - Keyboard shortcuts for the tool/IDE
+   - Scale based on topic scope: narrow topics = 1-2, broad = 2-3
    - Example: "Write the syntax for a Laravel validation rule with custom message (no IDE, from memory)"
    - Example: "What command creates a new middleware in Laravel?"
 
-2. **Hands-on Exercise (1 main task)** - Apply knowledge in realistic context:
+2. **Hands-on Exercise (MANDATORY, 1-2 main tasks)** - Apply knowledge in realistic context:
+   
+   **Scale tasks based on complexity:**
+   - Simple topics (e.g., single function/method): 1 focused task
+   - Complex topics (e.g., authentication system, API design): 2 related tasks
    
    **Prefer: Direct Application to Current Project**
    - If the concept can be applied directly to the user's actual app, do so
@@ -227,6 +234,8 @@ For concepts like coding patterns, tools, syntax, libraries:
    - Confidence in syntax and patterns
    - Better retention through active practice
    - Real-world application skills
+
+**Note on flexibility**: Adjust question counts based on topic complexity. A simple getter/setter might need 1 recall + 1 practice, while a comprehensive authentication system might need 3 recall + 2 practice tasks.
 
 ### Quiz Rules
 
