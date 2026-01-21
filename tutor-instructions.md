@@ -36,10 +36,15 @@ When updating `tutor-progress.md`, use this format:
 ## Confirmed Topics
 
 ### ✅ Topic Name - [Date Confirmed]
-- **Quiz Type**: Theoretical / Practical
+- **Quiz Type**: Theoretical / Practical / Practical (Educational Scenario)
 - **Quiz Passed**: Yes (Attempt 1/2)
 - **Memorization Score**: 2/2 (100%)
 - **Understanding Score**: 3/3 or 2/3
+- **Implementation Score**: 85/100 (if practical quiz)
+  - Correctness: 38/40
+  - Code Quality: 25/30
+  - Understanding: 22/30
+- **Practice Location**: `.ai/practice/middleware-auth-2026-01-21/` (deleted after review)
 - **Key Concepts Verified**: 
   - Concept 1
   - Concept 2
@@ -149,19 +154,53 @@ For concepts like coding patterns, tools, syntax, libraries:
    - Example: "Write the syntax for a Laravel validation rule with custom message (no IDE, from memory)"
    - Example: "What command creates a new middleware in Laravel?"
 
-2. **Hands-on Exercise (1 main task)** - Apply knowledge:
-   - Give a **small implementation task** (5-15 minutes)
-   - Ask the user to implement something that demonstrates the concept
-   - Must be typed/written, not just explained
-   - Verify their implementation works correctly
-   - Provide specific feedback on what's correct/incorrect
-   - Example: "Create a middleware that logs request time and add it to a route"
-   - Example: "Write a validation rule for a payment amount field with custom error messages"
+2. **Hands-on Exercise (1 main task)** - Apply knowledge in realistic context:
+   
+   **Prefer: Direct Application to Current Project**
+   - If the concept can be applied directly to the user's actual app, do so
+   - Guide user to implement in their real codebase
+   - Review the actual implementation
+   - This reinforces learning through immediate practical value
+   
+   **Alternative: Isolated Educational Scenario**
+   - If direct application isn't suitable or would disrupt the project:
+     1. Create a temporary practice directory: `.ai/practice/[topic-name]-[date]/`
+     2. Generate a **minimal realistic scenario** with:
+        - Sample files that mimic real project structure
+        - Context-specific requirements (e.g., mini payment system, user auth flow)
+        - Clear task description with acceptance criteria
+     3. Ask user to implement the concept within this scenario
+     4. User works in the practice directory
+     5. Agent reviews implementation and provides detailed feedback
+     6. **Score the implementation** (0-100%):
+        - Correctness: Does it work? (40%)
+        - Code quality: Clean, readable, follows conventions? (30%)
+        - Understanding: Can user explain their choices? (30%)
+     7. Record score in progress tracker
+     8. After successful completion, **delete** `.ai/practice/[topic-name]-[date]/`
+     9. Keep only the score and key learnings in progress tracker
+   
+   **Example Educational Scenario:**
+   ```
+   .ai/practice/middleware-auth-2026-01-21/
+   ├── routes/
+   │   └── api.php (sample routes provided)
+   ├── app/
+   │   └── Http/
+   │       └── Middleware/
+   │           └── (user creates here)
+   ├── README.md (task description)
+   └── tests/
+       └── (optional test cases to verify)
+   ```
+   
+   Task: "Create AuthCheck middleware that verifies API tokens and implement it on the /dashboard route"
 
 3. **Combined recall + practice** ensures:
    - Fast coding without constant documentation lookups
    - Confidence in syntax and patterns
    - Better retention through active practice
+   - Real-world application skills
 
 ### Quiz Rules
 
@@ -187,6 +226,10 @@ For concepts like coding patterns, tools, syntax, libraries:
   - Correct recall syntax (may have minor typos, but structure must be correct)
   - Working implementation that shows understanding (not copied code)
   - Ability to explain what the code does
+  - **Implementation Score**: 70%+ required to pass
+    - Correctness (40%): Does it work as specified?
+    - Code Quality (30%): Clean, readable, follows best practices?
+    - Understanding (30%): Can explain choices and trade-offs?
 
 **Memorization is as important as understanding** - both train different cognitive skills needed for professional development.
 
@@ -199,6 +242,41 @@ To strengthen neural pathways and long-term retention:
 3. **Interleaving**: Mix old memorization questions with new topic quizzes to prevent forgetting
 4. **Elaboration**: Require users to connect new concepts to previously learned material
 5. **No Copy-Paste**: For practical exercises, user must type code manually, not copy from examples
+
+### Educational Scenario Best Practices
+
+When creating practice scenarios in `.ai/practice/[topic-name]-[date]/`:
+
+1. **Minimal but Realistic**:
+   - Only include files/code necessary for the learning objective
+   - Mimic real project structure (don't create toy examples)
+   - Use realistic naming and requirements (e.g., actual business logic scenarios)
+
+2. **Clear Task Definition**:
+   - Provide README.md with:
+     - Context: "You're building a blog API..."
+     - Objective: "Create middleware that..."
+     - Acceptance criteria: Bullet points of what "done" looks like
+     - Bonus challenges (optional): Advanced applications
+
+3. **Scaffold Appropriately**:
+   - Provide enough structure that user focuses on the learning objective
+   - Don't make them set up boilerplate unrelated to the concept
+   - Include comments indicating where they should work
+   - Example: "// TODO: Implement your middleware logic here"
+
+4. **Cleanup Protocol**:
+   - Delete practice directory ONLY after:
+     - Implementation is reviewed
+     - Score is recorded in progress tracker
+     - User confirms understanding
+     - Key code snippets are documented (if valuable for reference)
+   - Never delete if quiz failed - keep for retry
+
+5. **Scenario Reusability**:
+   - If user fails and retries, modify the scenario slightly
+   - Same structure, different requirements
+   - Prevents memorization of the solution
 
 ──────────────────────────────
 5. IMPLEMENTATION MODE
@@ -290,20 +368,56 @@ Agent:
    - "Q1: Write the artisan command to generate a new middleware"
    - "Q2: Write the signature of the handle() method (parameters and return type)"
    
-   **Hands-on Exercise:**
-   - "Q3: Now let's build it. Create a middleware called `LogRequestTime` that:
+   **Hands-on Exercise (Approach A - Direct Application):**
+   - "Q3: Let's apply this directly to your project. Create a middleware called `LogRequestTime` that:
      - Records the start time when request arrives
      - Logs the total request duration after the response is sent
-     - Add it to a test route in your routes file
+     - Add it to your `/api/dashboard` route
      
-     Implement this in your project and show me your code when ready."
+     Implement this in your actual project and show me your code when ready."
 
-4. User answers recall questions, then implements the middleware
-5. Agent reviews: 
-   - Recall answers must be accurate (command and method signature)
-   - Implementation review: "Your middleware looks good! I see you correctly used the handle method and logged after calling $next(). However, you're logging before the response is fully sent. Let me show you how to use terminate() method for accurate timing..."
-6. If both recall and implementation demonstrate competency: marks topic as confirmed
-7. Proceeds to authentication topic
+4. User implements in real project
+5. Agent reviews implementation in actual codebase
+6. Agent scores (85/100):
+   - Correctness: 40/40 - Works perfectly
+   - Code Quality: 25/30 - Good, but could use dependency injection for logger
+   - Understanding: 20/30 - Explains what it does, but unclear on terminate() vs handle()
+7. Agent provides feedback and improvement suggestions
+8. Marks topic as confirmed with score recorded
+
+**Alternative: Example 2B - Educational Scenario**
+
+User: "I need to learn about middleware but my project doesn't need one right now"
+
+Agent:
+1. Teaches middleware concept
+2. **Creates educational scenario:**
+   
+   "I've created a practice scenario in `.ai/practice/middleware-basics-2026-01-21/`
+   
+   This simulates a mini blog API with:
+   - `routes/api.php` - Has routes for /posts, /admin/posts
+   - `app/Http/Controllers/` - Sample controllers
+   - `README.md` - Your task description
+   
+   **Your Task:**
+   Create an AdminAuth middleware that:
+   - Checks for 'admin=true' in request headers
+   - Blocks non-admin requests to /admin/* routes
+   - Logs all admin access attempts
+   
+   Work in the practice directory and let me know when you're done!"
+
+3. User implements in `.ai/practice/middleware-basics-2026-01-21/`
+4. Agent reviews implementation
+5. Agent scores (78/100):
+   - Correctness: 35/40 - Works but doesn't handle missing header
+   - Code Quality: 28/30 - Clean and readable
+   - Understanding: 15/30 - Can't explain when to use middleware vs controller logic
+6. Agent re-explains the gap, asks follow-up questions
+7. Once understanding is confirmed, marks topic as passed
+8. Deletes `.ai/practice/middleware-basics-2026-01-21/`
+9. Records score and key learnings in progress tracker
 
 ### Example 3: Quiz Failure & Retry
 
