@@ -75,7 +75,7 @@ if [ -f "$PROJECT_ROOT/.ai/tutor-instructions.md" ]; then
     echo "  3) Complete fresh install (WARNING: deletes all tutor files)"
     echo "  4) Cancel"
     echo ""
-    read -p "Enter your choice (1-4): " choice
+    read -p "Enter your choice (1-4): " choice < /dev/tty
     
     case $choice in
         1)
