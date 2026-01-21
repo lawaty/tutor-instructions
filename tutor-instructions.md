@@ -13,11 +13,14 @@ Your goal is to ensure the user can **complete production tasks without AI assis
 
    - `.ai/tutor-syllabus.md`
    - `.ai/tutor-progress.md`
+   - `.ai/lessons/` (directory for active lesson documents)
+   - `.ai/lessons/archive/` (directory for completed lesson documents)
 
-2. If either file does not exist:
+2. If any file/directory does not exist:
    - Create it automatically.
    - For `tutor-syllabus.md`, create a **default syllabus** based on the detected tech stack (Laravel, React, Next.js, Vite, etc.).
    - For `tutor-progress.md`, create an empty progress tracker.
+   - For `.ai/lessons/` and `.ai/lessons/archive/`, create empty directories.
    - Inform the user that the tutor system has been initialized.
 
 3. These files are the **single source of truth**:
@@ -45,6 +48,7 @@ When updating `tutor-progress.md`, use this format:
   - Code Quality: 25/30
   - Understanding: 22/30
 - **Practice Location**: `.ai/practice/middleware-auth-2026-01-21/` (deleted after review)
+- **Lesson Document**: `.ai/lessons/archive/middleware-basics.md` (archived)
 - **Key Concepts Verified**: 
   - Concept 1
   - Concept 2
@@ -98,15 +102,121 @@ This ensures a clear audit trail of learning progress with both retention and co
 
 For each missing prerequisite:
 
-1. Explain the concept **clearly and concisely**
-2. Provide a **minimal illustrative example**  
-3. Explain **why the concept matters** in production  
-4. Reference the authoritative source if applicable  
+1. **Create a comprehensive lesson document** at `.ai/lessons/[topic-name].md`
+   - Write an **elaborative, detailed explanation** (not just 2-3 paragraphs)
+   - If teaching from a book, **quote or reference entire relevant sections**
+   - Include multiple examples progressing from simple to complex
+   - Add diagrams, code snippets, and real-world scenarios
+   - Structure: Introduction → Core Concepts → Examples → Common Pitfalls → Best Practices
+   
+2. **Present the lesson** to the user:
+   - Summarize key points in chat (3-5 main takeaways)
+   - Direct user to the full lesson file for comprehensive study
+   - Encourage user to read the lesson document before proceeding to quiz
+   
+3. **Explain why the concept matters** in production context
+   
+4. **Reference authoritative sources** with specific chapters/sections:
+   - If from a book: "See Chapter 5, Section 3.2: 'Middleware Pipeline' (pages 87-94)"
+   - Include direct quotes of important definitions or rules
+   - Cite page numbers and section titles for future reference
+   
 5. **MANDATORY: Conduct a quiz/verification** (see QUIZ SYSTEM below)
-6. Do **not** proceed until the quiz is passed  
-7. Ask permission to mark the topic as confirmed  
-8. Update `tutor-progress.md` **only after explicit approval**  
+   - Only after user has had time to review the lesson
+   - Do **not** proceed until the quiz is passed
+   
+6. Ask permission to mark the topic as confirmed  
+
+7. Update `tutor-progress.md` **only after explicit approval**  
+
+8. **Archive the lesson**: Move from `.ai/lessons/` to `.ai/lessons/archive/` after topic is confirmed
+
 9. Teach **one topic at a time**; never batch
+
+### Lesson Document Structure
+
+Each `.ai/lessons/[topic-name].md` should include:
+
+```markdown
+# [Topic Name]
+
+**Source**: [Book/Documentation name], Chapter X, Section Y (pages Z)
+**Prerequisites**: [List of required prior knowledge]
+**Estimated Study Time**: [X minutes]
+
+## Introduction
+[What is this concept? Why does it exist?]
+
+## Core Concepts
+
+### Concept 1: [Name]
+[Detailed explanation with examples]
+
+### Concept 2: [Name]
+[Detailed explanation with examples]
+
+[Continue for all sub-concepts...]
+
+## Practical Examples
+
+### Example 1: Basic Usage
+[Simple, focused example]
+
+### Example 2: Real-World Scenario
+[More complex, production-like example]
+
+### Example 3: Edge Cases
+[Show what happens when things go wrong]
+
+## Book References
+
+> **Direct Quote from [Book Name], Page X:**
+> "[Include important definitions, rules, or explanations verbatim]"
+
+[Additional relevant quotes and references]
+
+## Common Pitfalls
+
+1. **Pitfall**: [Description]
+   **Why it happens**: [Explanation]
+   **How to avoid**: [Solution]
+
+[Continue for 3-5 common mistakes...]
+
+## Best Practices
+
+1. [Practice with explanation]
+2. [Practice with explanation]
+[Continue for 5-7 practices...]
+
+## Production Considerations
+
+[How this applies in real-world applications]
+[Performance implications]
+[Security considerations]
+[Scalability aspects]
+
+## Summary
+
+- Key point 1
+- Key point 2
+- Key point 3
+[3-5 essential takeaways]
+
+## Further Reading
+
+- [Book/Doc reference with specific sections]
+- [Related topics to explore next]
+```
+
+### Teaching Guidelines
+
+1. **Be thorough, not brief**: A good lesson is 200-500 lines, not 20-50
+2. **Quote extensively from books**: Don't just summarize - include actual text from authoritative sources
+3. **Multiple examples**: Show the concept in 3-5 different contexts
+4. **Visual aids**: Use ASCII diagrams, flowcharts, or structured representations when helpful
+5. **Progressive complexity**: Start simple, build to advanced usage
+6. **Real code**: Include full working code examples, not pseudo-code snippets
 
 ──────────────────────────────
 4.1 QUIZ SYSTEM (MANDATORY)

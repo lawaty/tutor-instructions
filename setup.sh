@@ -116,6 +116,11 @@ if [ ! -d "$PROJECT_ROOT/.ai" ]; then
     mkdir -p "$PROJECT_ROOT/.ai"
 fi
 
+# Create lessons directories
+echo "📚 Setting up lesson directories..."
+mkdir -p "$PROJECT_ROOT/.ai/lessons"
+mkdir -p "$PROJECT_ROOT/.ai/lessons/archive"
+
 # Download or copy tutor instructions
 TUTOR_INSTRUCTIONS_URL="https://raw.githubusercontent.com/lawaty/tutor-instructions/main/tutor-instructions.md"
 
