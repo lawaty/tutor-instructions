@@ -1,40 +1,25 @@
 ## For Users (People Using Your Tutor System)
 
-### Method 1: Quick Setup Script
-```bash
-# Navigate to your project
-cd /path/to/your/project
+### Install or Update (Single Command)
 
-# Download and run setup script
-curl -fsSL https://raw.githubusercontent.com/lawaty/tutor-instructions/main/setup.sh | bash
+Run this from your project root — works for **both** fresh installs and updates:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/lawaty/tutor-instructions/main/setup.sh)
 ```
 
-### Method 2: Manual Clone
-```bash
-# Navigate to your project
-cd /path/to/your/project
+On a fresh project it sets everything up. On an existing install it detects your files and lets you choose what to update (your progress, syllabus, playground, and quizzes are preserved).
 
-# Clone into .ai directory
+### Alternative: Clone Method
+
+```bash
+# First time
 git clone https://github.com/lawaty/tutor-instructions.git .ai/tutor-instructions
+bash .ai/tutor-instructions/setup.sh
 
-# Copy instructions
-cp .ai/tutor-instructions/tutor-instructions.md .ai/
-
-# Add to GitHub Copilot instructions
-mkdir -p .github
-cat .ai/tutor-instructions.md >> .github/copilot-instructions.md
-```
-
-### Method 3: Git Submodule (Advanced)
-```bash
-# Add as submodule
-git submodule add https://github.com/lawaty/tutor-instructions.git .ai/tutor-instructions
-
-# Link the instructions file
-cp .ai/tutor-instructions/tutor-instructions.md .ai/
-
-# Update
-git submodule update --remote
+# To update later
+cd .ai/tutor-instructions && git pull && cd ../..
+bash .ai/tutor-instructions/setup.sh
 ```
 
 ---
@@ -69,12 +54,10 @@ Secondary: Official Docs
 ```
 
 ### Multiple Projects
-Use the same tutor system across projects:
+Run the same command in each project:
 ```bash
-# In each project
 cd /path/to/project
-git clone https://github.com/lawaty/tutor-instructions.git .ai/tutor-instructions
-cp .ai/tutor-instructions/tutor-instructions.md .ai/
+bash <(curl -fsSL https://raw.githubusercontent.com/lawaty/tutor-instructions/main/setup.sh)
 ```
 
 ---

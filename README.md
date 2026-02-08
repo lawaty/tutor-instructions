@@ -14,25 +14,19 @@ When integrated into your project, the AI will:
 
 ## 🚀 Quick Start
 
-### ⭐ Recommended Method
+Run this from your project root — works for **both fresh installs and updates**:
 
 ```bash
-# Navigate to your project
-cd /path/to/your/project
-
-# Clone and setup
-git clone https://github.com/lawaty/tutor-instructions.git .ai/tutor-instructions
-bash .ai/tutor-instructions/setup.sh
+bash <(curl -fsSL https://raw.githubusercontent.com/lawaty/tutor-instructions/main/setup.sh)
 ```
 
-This ensures you get the latest version and the setup script can find all necessary files.
+That's it. The script detects whether you have an existing install and acts accordingly.
 
 ### Alternative Methods
 
 See **[INSTALL.md](INSTALL.md)** for:
-- Direct curl/wget installation
-- Manual setup steps
-- Troubleshooting common issues
+- Clone-based installation (offline/pinned versions)
+- Update options explained
 - Setup verification
 
 ## 📁 What Gets Created

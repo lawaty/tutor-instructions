@@ -152,8 +152,15 @@ fi
 
 echo "✅ Tutor instructions installed to .ai/tutor-instructions.md"
 
-# If update mode, skip the rest
+# If update mode, update copilot-instructions.md too, then exit
 if [ "$UPDATE_MODE" = true ]; then
+    # Also update copilot-instructions.md
+    COPILOT_FILE="$PROJECT_ROOT/.github/copilot-instructions.md"
+    if [ -f "$COPILOT_FILE" ]; then
+        cp "$PROJECT_ROOT/.ai/tutor-instructions.md" "$COPILOT_FILE"
+        echo "✅ Updated .github/copilot-instructions.md"
+    fi
+
     echo ""
     echo "======================================"
     echo "✨ AI Tutor Update Complete! ✨"
@@ -161,10 +168,14 @@ if [ "$UPDATE_MODE" = true ]; then
     echo ""
     echo "📊 Updated:"
     echo "   - .ai/tutor-instructions.md (latest version)"
+    echo "   - .github/copilot-instructions.md (latest version)"
     echo ""
     echo "📊 Preserved:"
     echo "   - .ai/tutor-syllabus.md (your custom syllabus)"
     echo "   - .ai/tutor-progress.md (your learning progress)"
+    echo "   - .ai/playground/ (your code)"
+    echo "   - .ai/quizzes/ (your quiz history)"
+    echo "   - .ai/lessons/ (your lessons)"
     echo ""
     echo "💡 Restart your AI assistant to use the updated instructions!"
     echo ""
