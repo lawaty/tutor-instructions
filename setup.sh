@@ -121,6 +121,76 @@ echo "📚 Setting up lesson directories..."
 mkdir -p "$PROJECT_ROOT/.ai/lessons"
 mkdir -p "$PROJECT_ROOT/.ai/lessons/archive"
 
+# Create additional directories
+echo "📂 Setting up additional directories..."
+mkdir -p "$PROJECT_ROOT/.ai/cheatsheets"
+mkdir -p "$PROJECT_ROOT/.ai/incidents"
+
+# Create global progress vault if it doesn't exist
+VAULT_DIR="$HOME/.ai-tutor"
+if [ ! -d "$VAULT_DIR" ]; then
+    echo "🏦 Creating global progress vault at ~/.ai-tutor/..."
+    mkdir -p "$VAULT_DIR/cheatsheets"
+    mkdir -p "$VAULT_DIR/projects"
+    cat > "$VAULT_DIR/README.md" << 'VAULTEOF'
+# AI Tutor — Progress Vault
+
+This directory stores your learning progress across all projects.
+It persists even when you start new projects or switch machines (if Git-backed).
+
+## How it works
+
+- Every time you confirm a topic, it's recorded here AND in your project's `.ai/` directory
+- When you start a new project, the tutor checks this vault to see what you already know
+- Cheat sheets accumulate here as a permanent reference library
+
+## Optional: Cross-machine sync
+
+To sync across machines, initialize this as a Git repo:
+
+```bash
+cd ~/.ai-tutor
+git init
+git remote add origin git@github.com:YOUR_USER/ai-tutor-progress.git
+git add -A && git commit -m "init vault" && git push
+```
+
+Then on another machine:
+```bash
+git clone git@github.com:YOUR_USER/ai-tutor-progress.git ~/.ai-tutor
+```
+
+The tutor will auto-commit changes. You just need to push/pull when switching machines.
+VAULTEOF
+    cat > "$VAULT_DIR/global-progress.md" << 'PROGRESSEOF'
+# Global Learning Progress
+
+**Last updated**: (auto-updated by tutor)
+**Total topics confirmed**: 0
+**Projects tracked**: 0
+
+## Confirmed Skills (cross-project)
+
+(Topics will appear here as you confirm them across projects)
+PROGRESSEOF
+    cat > "$VAULT_DIR/stats.md" << 'STATSEOF'
+# Learning Statistics
+
+**Learning started**: (auto-detected on first topic confirmation)
+**Total study sessions**: 0
+**Total topics confirmed**: 0
+**Total quizzes taken**: 0
+**Average quiz score**: N/A
+
+## Monthly Summary
+
+(Monthly breakdowns will appear here as you progress)
+STATSEOF
+    echo "✅ Global progress vault initialized at ~/.ai-tutor/"
+else
+    echo "ℹ️  Global progress vault already exists at ~/.ai-tutor/"
+fi
+
 # Download or copy tutor instructions
 TUTOR_INSTRUCTIONS_URL="https://raw.githubusercontent.com/lawaty/tutor-instructions/main/tutor-instructions.md"
 
@@ -176,6 +246,9 @@ if [ "$UPDATE_MODE" = true ]; then
     echo "   - .ai/playground/ (your code)"
     echo "   - .ai/quizzes/ (your quiz history)"
     echo "   - .ai/lessons/ (your lessons)"
+    echo "   - .ai/cheatsheets/ (your reference cards)"
+    echo "   - .ai/incidents/ (your incident scenarios)"
+    echo "   - ~/.ai-tutor/ (your global progress vault)"
     echo ""
     echo "💡 Restart your AI assistant to use the updated instructions!"
     echo ""
@@ -290,6 +363,8 @@ echo "🎯 Next steps:"
 echo "   1. Edit .ai/tutor-syllabus.md to customize your learning path"
 echo "   2. Start working with GitHub Copilot - it will now act as your tutor"
 echo "   3. Progress will be tracked in .ai/tutor-progress.md (auto-created)"
+echo "   4. Global progress persists at ~/.ai-tutor/ across all projects"
+echo "   5. (Optional) Set up cross-machine sync: cd ~/.ai-tutor && git init"
 echo ""
 echo "💡 Tip: Ask your AI assistant to 'build a feature' and watch it teach first!"
 echo ""

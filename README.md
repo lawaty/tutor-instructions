@@ -34,13 +34,24 @@ See **[INSTALL.md](INSTALL.md)** for:
 After setup, your project will have:
 
 ```
-your-project/
+your-project/ 
 ├── .ai/
 │   ├── tutor-instructions.md      # Core tutor instructions
 │   ├── tutor-syllabus.md          # Auto-generated syllabus (created on first use)
-│   └── tutor-progress.md          # Your learning progress tracker
+│   ├── tutor-progress.md          # Your learning progress tracker
+│   ├── lessons/                   # Active + archived lesson documents
+│   ├── playground/                # Persistent code workspace
+│   ├── quizzes/                   # Quiz files + archive
+│   ├── cheatsheets/               # Auto-generated reference cards
+│   └── incidents/                 # Production incident simulations
 └── .github/
     └── copilot-instructions.md    # GitHub Copilot instructions
+
+~/.ai-tutor/                       # Global progress vault (cross-project)
+├── global-progress.md
+├── cheatsheets/
+├── projects/
+└── stats.md
 ```
 
 ## 🎓 How It Works
@@ -64,6 +75,22 @@ For each concept:
 - Production context and "why it matters"
 - Confirmation of understanding required
 - Progress tracking with your approval
+
+### 4. **Advanced Learning Modes**
+Beyond standard lessons and quizzes:
+- **Code Review Training** — review flawed production code (reverse direction)
+- **Refactoring Challenges** — restructure working but messy code
+- **Production Incident Simulator** — diagnose and fix realistic on-call scenarios
+- **Open-Source Scavenger Hunts** — explore real framework internals
+- **Cross-Topic Integration Quizzes** — combine 4-5 topics in one scenario
+- **Cheat Sheet Generator** — auto-generated reference cards per topic
+
+### 5. **Persistent Progress Vault**
+Your learning progress persists across projects via `~/.ai-tutor/`:
+- Confirmed topics carry over to new projects (opt-in)
+- Cheat sheets accumulate into a personal reference library
+- Stats track your learning journey over time
+- Optional Git-backed sync for cross-machine persistence
 
 ## 📚 Authoritative Sources
 
@@ -116,9 +143,18 @@ cp tutor-instructions.md ../tutor-instructions.md
 ```
 
 ### Share Progress Across Projects
-Symlink your progress file:
+Progress is automatically shared via the global vault at `~/.ai-tutor/`.
+To sync across machines, back it with a private Git repo:
 ```bash
-ln -s ~/.ai-tutor/tutor-progress.md .ai/tutor-progress.md
+cd ~/.ai-tutor
+git init
+git remote add origin git@github.com:YOUR_USER/ai-tutor-progress.git
+git add -A && git commit -m "init" && git push
+```
+
+On another machine:
+```bash
+git clone git@github.com:YOUR_USER/ai-tutor-progress.git ~/.ai-tutor
 ```
 
 ## 💡 Example Interaction
