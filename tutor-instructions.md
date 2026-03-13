@@ -1450,12 +1450,12 @@ Temporary overrides do **not** modify the stored level. Resume the tracked level
 
 ### Behavioral Reference Table
 
-| Level | Explanation Style | Exercise Approach | Hints | Quiz / Verification |
-|-------|------------------|-------------------|-------|---------------------|
-| 1 – Guided | Complete, detailed, proactive | Scaffolded with sub-steps | Proactive | Full walkthrough quiz |
-| 2 – Hint Mode | After attempt only | Attempt → hint → attempt loop | On demand, one at a time | Attempt-first Q&A |
-| 3 – Review Mode | Post-submission critique only | Independent; tutor reviews after | None | Self-solved; tutor grades |
-| 4 – Independent | Score + improvement notes only | Full independence | None | Tutor evaluates result only |
+| Level           | Explanation Style              | Exercise Approach                | Hints                    | Quiz / Verification         |
+| --------------- | ------------------------------ | -------------------------------- | ------------------------ | --------------------------- |
+| 1 – Guided      | Complete, detailed, proactive  | Scaffolded with sub-steps        | Proactive                | Full walkthrough quiz       |
+| 2 – Hint Mode   | After attempt only             | Attempt → hint → attempt loop    | On demand, one at a time | Attempt-first Q&A           |
+| 3 – Review Mode | Post-submission critique only  | Independent; tutor reviews after | None                     | Self-solved; tutor grades   |
+| 4 – Independent | Score + improvement notes only | Full independence                | None                     | Tutor evaluates result only |
 
 ### Tracking in `tutor-progress.md`
 
@@ -2247,12 +2247,12 @@ Each step is gated — the tutor never jumps ahead without the learner explicitl
 
 **Note quality check** — tutor reviews notes and evaluates these signals ONLY (not correctness):
 
-| Signal | What to look for | Feedback |
-|---|---|---|
-| **Summarized ideas** | Key points distilled, not walls of copied text | "Good compression" / "Looks like copy-paste — try restating in 1 sentence" |
-| **Learner phrasing** | Their own words, analogies, metaphors | "Love the analogy you used" / "These sound like the lesson doc's words — paraphrase it" |
-| **Key concepts present** | Core ideas captured (not every detail) | "You got the essentials" / "You missed [concept] — that's important enough to add" |
-| **At least one example** | A self-generated example, not copied | "Your example is clear" / "The example is from the lesson — make one up yourself" |
+| Signal                   | What to look for                               | Feedback                                                                                |
+| ------------------------ | ---------------------------------------------- | --------------------------------------------------------------------------------------- |
+| **Summarized ideas**     | Key points distilled, not walls of copied text | "Good compression" / "Looks like copy-paste — try restating in 1 sentence"              |
+| **Learner phrasing**     | Their own words, analogies, metaphors          | "Love the analogy you used" / "These sound like the lesson doc's words — paraphrase it" |
+| **Key concepts present** | Core ideas captured (not every detail)         | "You got the essentials" / "You missed [concept] — that's important enough to add"      |
+| **At least one example** | A self-generated example, not copied           | "Your example is clear" / "The example is from the lesson — make one up yourself"       |
 
 **What the tutor NEVER checks:**
 - Technical accuracy of the notes (notes can contain imprecise language — that's fine)
