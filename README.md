@@ -39,11 +39,15 @@ your-project/
 │   ├── tutor-instructions.md      # Core tutor instructions
 │   ├── tutor-syllabus.md          # Auto-generated syllabus (created on first use)
 │   ├── tutor-progress.md          # Your learning progress tracker
+│   ├── study-sessions.md          # Study date/time tracking for spaced repetition
 │   ├── lessons/                   # Active + archived lesson documents
 │   ├── playground/                # Persistent code workspace
 │   ├── quizzes/                   # Quiz files + archive
+│   ├── revisions/                 # Revision sessions with summaries & exercises
 │   ├── cheatsheets/               # Auto-generated reference cards
-│   └── incidents/                 # Production incident simulations
+│   ├── incidents/                 # Production incident simulations
+│   ├── mistakes/                  # Mistake reflection logs by topic area
+│   └── notes/                     # Your notes in your own words (quality-tracked)
 └── .github/
     └── copilot-instructions.md    # GitHub Copilot instructions
 
@@ -77,15 +81,48 @@ For each concept:
 - Progress tracking with your approval
 
 ### 4. **Advanced Learning Modes**
-Beyond standard lessons and quizzes:
+Beyond standard lessons and quizzes — all woven into the learning journey:
+
+**Cognitive Training:**
+- **Prediction Questions** — asked before every lesson to prime the brain and exploit the generation effect
+- **Teach Back Mechanism** — explain it as if teaching a junior dev; exposes gaps you didn't know you had
+- **Recall-From-Memory Prompts** — spontaneous in-session recall checks on prior confirmed topics
+- **Code-From-Memory Challenges** — timed, no-reference coding tasks to build genuine fluency
+- **Struggle Window** — every exercise follows: problem → attempt → hint 1 → hint 2 → solution (never skip ahead)
+
+**Code Analysis & Reflection:**
 - **Code Review Training** — review flawed production code (reverse direction)
-- **Refactoring Challenges** — restructure working but messy code
-- **Production Incident Simulator** — diagnose and fix realistic on-call scenarios
-- **Open-Source Scavenger Hunts** — explore real framework internals
-- **Cross-Topic Integration Quizzes** — combine 4-5 topics in one scenario
+- **Reverse Engineering Tasks** — given code, analyze what it does, why, and what design decisions it reflects
+- **Refactoring Challenges** — restructure working but messy real-world code
+
+**Production Simulation:**
+- **Production Incident Simulator** — diagnose and fix realistic on-call scenarios with post-mortems
+- **Open-Source Scavenger Hunts** — explore real framework internals to understand how concepts are truly implemented
+
+**Knowledge Management:**
+- **Note-Taking System** — prompted after every lesson; tutor checks quality signals (summarized ideas, learner phrasing, examples) — not correctness
+- **Mistake Reflection Log** — every significant error captured as a diagnostic entry with root-cause analysis and resolution tracking
 - **Cheat Sheet Generator** — auto-generated reference cards per topic
 
-### 5. **Persistent Progress Vault**
+**Meta-Cognition:**
+- **Meta-Learning Lessons** — dedicated lessons on HOW to debug, read codebases, read documentation, understand frameworks, and how memory and learning actually work
+
+**Cross-Cutting:**
+- **Cross-Topic Integration Quizzes** — combine 4-5 topics in one realistic scenario after every section
+
+### 5. **Spaced Repetition & Revision System**
+Long-term retention through evidence-based review:
+- **Session Tracking** — logs all study dates and times automatically
+- **Smart Reminders** — recommends revision when you haven't studied for 3+ days
+- **Review Schedules** — calculates optimal review dates (1 day, 3 days, 1 week, etc.)
+- **Revision Sessions** — generates comprehensive reviews with:
+  - Summarized refreshers of each topic
+  - Hands-on exercises (recall challenges, integration tasks, code explanation)
+  - Reflection questions to deepen understanding
+- **Adaptive Intervals** — adjusts review frequency based on your retention strength
+- **Study Streak Tracking** — maintains motivation with consecutive day counts
+
+### 6. **Persistent Progress Vault**
 Your learning progress persists across projects via `~/.ai-tutor/`:
 - Confirmed topics carry over to new projects (opt-in)
 - Cheat sheets accumulate into a personal reference library
