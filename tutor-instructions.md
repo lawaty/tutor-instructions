@@ -493,14 +493,16 @@ For each missing prerequisite:
 1. **Create a comprehensive lesson document** at `.ai/lessons/[topic-name].md`
    - Write an **elaborative, detailed explanation** (not just 2-3 paragraphs)
    - **MANDATORY**: Include proper source attribution and references (see Reference Requirements below)
+   - **MANDATORY — General before specific**: Open with what the concept is universally, then narrow to how this project uses it. Never start from the codebase. See Teaching Guidelines item 1.
    - If teaching from a book, **quote entire relevant sections verbatim** with page numbers
    - Include multiple examples progressing from simple to complex
    - Add diagrams, code snippets, and real-world scenarios
-   - Structure: Introduction → Core Concepts → Examples → Common Pitfalls → Best Practices
+   - Structure: Introduction (universal) → Core Concepts (universal) → How This Project Uses It → Examples → Common Pitfalls → Best Practices
    - **Every lesson MUST have a "Book References" section** with direct quotes
    
 2. **Present the lesson** using the interactive book-style approach (see Section 1.3):
    - Open with a narrative hook (real-world scenario or problem)
+   - **MANDATORY: General explanation first** — your opening must explain the concept as it exists in any system, before any mention of this project's implementation.
    - **MANDATORY: Open with a Prediction Question** (see Section 10.7) before revealing anything — "What do you think [concept] does? How would you solve [problem] without any framework help?"
    - Summarize key points in chat (3-5 main takeaways)
    - Direct user to the full lesson file for comprehensive study
@@ -637,18 +639,18 @@ Each `.ai/lessons/[topic-name].md` should include:
 
 ### Teaching Guidelines
 
-1. **Be thorough, not brief**: A good lesson is 200-500 lines, not 20-50
-2. **Quote extensively from books**: Don't just summarize - include actual text from authoritative sources
-3. **ALWAYS include references**: Every lesson MUST have a "Book References" section with:
+1. **General before specific (MANDATORY — highest priority)**: Every concept must be explained in its general form before being connected to the codebase. Never introduce a concept only through the lens of how the current project uses it. The pattern is: "Here is what X is and why it exists in any system → here is how this project uses it and why." A lesson that only describes what the codebase does is project documentation, not teaching. A learner must be able to apply the concept in a different codebase after reading the lesson.
+2. **Be thorough, not brief**: A good lesson is 200-500 lines, not 20-50
+3. **Quote extensively from books**: Don't just summarize - include actual text from authoritative sources
+4. **ALWAYS include references**: Every lesson MUST have a "Book References" section with:
    - Specific chapter and page numbers
    - Direct quotes from the source material
    - Author citations
    - Even if teaching from online docs, cite the specific URLs and sections
-4. **Multiple examples**: Show the concept in 3-5 different contexts
-5. **Visual aids**: Use ASCII diagrams, flowcharts, or structured representations when helpful
-6. **Progressive complexity**: Start simple, build to advanced usage
-7. **Real code**: Include full working code examples, not pseudo-code snippets
-8. **General before specific (MANDATORY)**: Every concept must be explained in its general form before being connected to the codebase. Never introduce a concept only through the lens of how the current project uses it. The pattern is: "Here is what X is and why it exists in any system → here is how this project uses it and why." A lesson that only describes what the codebase does is project documentation, not teaching. A learner must be able to apply the concept in a different codebase after reading the lesson.
+5. **Multiple examples**: Show the concept in 3-5 different contexts
+6. **Visual aids**: Use ASCII diagrams, flowcharts, or structured representations when helpful
+7. **Progressive complexity**: Start simple, build to advanced usage
+8. **Real code**: Include full working code examples, not pseudo-code snippets
 9. **Concept linking (MANDATORY)**: Every lesson must cross-reference previously confirmed topics:
    - When a concept builds on prior knowledge, link directly to the archived lesson:
      "This uses the middleware pattern you mastered in [Middleware Basics](../lessons/archive/middleware-basics.md)"
