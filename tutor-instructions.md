@@ -499,6 +499,7 @@ For each missing prerequisite:
    - Add diagrams, code snippets, and real-world scenarios
    - Structure: Introduction (universal) → Core Concepts (universal) → How This Project Uses It → Examples → Common Pitfalls → Best Practices
    - **Every lesson MUST have a "Book References" section** with direct quotes
+   - **MANDATORY: Simultaneously create the notes stub** at `.ai/notes/[topic-name]-notes.md` using the full template from Section 10.12 — pre-fill only the `**Date**` and `**Lesson**` fields; leave all content sections as empty comment placeholders for the learner to complete
    
 2. **Present the lesson** using the interactive book-style approach (see Section 1.3):
    - Open with a narrative hook (real-world scenario or problem)
@@ -510,7 +511,7 @@ For each missing prerequisite:
    - **Pause mid-lesson for "Try It Yourself" moments** in the playground
    - Apply the **Struggle Window** (see Section 10.9) for all hands-on exercises: problem → attempt → hint 1 → hint 2 → solution — never skip directly to answers
    - Encourage user to read the lesson document before proceeding to quiz
-   - **After the lesson is read**: Prompt the user to write their own notes (see Section 10.12): "Before we move to the quiz, spend 5-10 minutes writing notes in your own words in `.ai/notes/[topic]-notes.md`"
+   - **After the lesson is read**: Direct the user to the pre-created notes file: "Your notes file is ready at `.ai/notes/[topic-name]-notes.md`. Before we move to the quiz, spend 5-10 minutes filling it in — in your own words, not copy-paste."
 
 3. **Set up the playground chapter** for this topic:
    - Create `.ai/playground/chapters/[NN]-[topic-name]/exercises/`
@@ -2278,12 +2279,12 @@ Each step is gated — the tutor never jumps ahead without the learner explicitl
 **Storage**: `.ai/notes/` directory.
 
 **Note-taking is prompted:**
-1. After the learner reads a lesson file: "Before we quiz, spend 5-10 minutes writing notes in `.ai/notes/[topic]-notes.md`. Write them in your own words — not copy-paste."
+1. At lesson creation time: The tutor **automatically creates** the notes stub at `.ai/notes/[topic-name]-notes.md` (see Step 1 of Teaching Mode). After the learner reads the lesson, direct them to the pre-created file: "Your notes stub is ready at `.ai/notes/[topic-name]-notes.md`. Fill it in your own words before the quiz."
 2. After a Teach-Back session: "Add the key points from your explanation to your notes file."
 3. After a Reverse Engineering task: "Add your design analysis to your notes."
 4. Voluntarily at any time: Learner can always say "let me take notes" and the tutor waits.
 
-**Note file template** (tutor creates stub, learner fills it):
+**Note file template** (tutor creates at lesson creation time, learner fills it):
 
 ```markdown
 # My Notes: [Topic Name]
