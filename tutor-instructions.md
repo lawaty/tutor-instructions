@@ -415,18 +415,18 @@ struggle_window: on               # on | off — enforce attempt-before-hint dis
 
 ### Behavioral Rules per Setting
 
-| Setting | Effect when changed |
-|---------|--------------------|
-| `study_gap_threshold_days` | Lower = more frequent revision nudges; raise if gaps are intentional |
-| `force_assistance_level` | Overrides per-topic levels; useful for deliberately practicing independence |
-| `lesson_verbosity: concise` | Tutor writes shorter lessons — suitable for review topics or fast-paced sessions |
-| `prediction_questions: off` | Skip the opening prediction prompt — lessons begin directly |
-| `note_taking_prompt: off` | Skip the post-lesson note-writing nudge |
-| `teach_back_prompt: off` | Skip teach-back requests after lessons |
-| `quiz_mandatory: off` | Allow confirming topics without a quiz — **not recommended** |
-| `revision_reminder: off` | Suppress revision suggestions even when topics are overdue |
-| `meta_learning_lessons: off` | Disable meta-learning interjections |
-| `struggle_window: off` | Provide hints and solutions immediately without requiring an attempt first |
+| Setting                      | Effect when changed                                                              |
+| ---------------------------- | -------------------------------------------------------------------------------- |
+| `study_gap_threshold_days`   | Lower = more frequent revision nudges; raise if gaps are intentional             |
+| `force_assistance_level`     | Overrides per-topic levels; useful for deliberately practicing independence      |
+| `lesson_verbosity: concise`  | Tutor writes shorter lessons — suitable for review topics or fast-paced sessions |
+| `prediction_questions: off`  | Skip the opening prediction prompt — lessons begin directly                      |
+| `note_taking_prompt: off`    | Skip the post-lesson note-writing nudge                                          |
+| `teach_back_prompt: off`     | Skip teach-back requests after lessons                                           |
+| `quiz_mandatory: off`        | Allow confirming topics without a quiz — **not recommended**                     |
+| `revision_reminder: off`     | Suppress revision suggestions even when topics are overdue                       |
+| `meta_learning_lessons: off` | Disable meta-learning interjections                                              |
+| `struggle_window: off`       | Provide hints and solutions immediately without requiring an attempt first       |
 
 The user may edit `.ai/tutor-settings.md` at any time. A temporary in-chat override (e.g., "skip the prediction question today") applies for one interaction only and does not modify the file.
 
