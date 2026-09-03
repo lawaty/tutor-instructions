@@ -2,369 +2,510 @@
 
 # AI Tutor Instructions Setup Script
 # ====================================
-# This script sets up or updates the AI tutor system in your project
+# Installs the AI tutor system into a target project.
+# Handles existing/user-owned instruction files (AGENT.md, AGENTS.md, CLAUDE.md, etc.)
+# safely: never overwrites user content, offers append-or-skip on conflicts.
 
 set -e  # Exit on error
 
-# Colors for output
+# Colors
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-echo "🎓 AI Tutor Instructions Setup"
-echo "=============================="
-echo ""
-
-# Detect project root (current directory)
+# ---- Defaults ----
 PROJECT_ROOT="$(pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TUTOR_DIR_NAME="tutor"
+TUTOR_DIR="$PROJECT_ROOT/$TUTOR_DIR_NAME"
+ENTRY_MARKER="tutor-system:entry"
+INCLUDE_START="tutor-system:include:start"
+INCLUDE_END="tutor-system:include:end"
+LEGACY_HEADER="SENIOR TUTOR AGENT INSTRUCTIONS"
+LEGACY_APPEND="# AI Tutor Mode"
+MODE="deep"
+FRAMEWORKS="default"
+APPEND_MODE=0
+NO_MODIFY=0
+YES=0
+UNINSTALL=0
+DRY_RUN=0
+STRICT=0
+
+# ---- Flag parsing ----
+usage() {
+    cat <<EOF
+AI Tutor Instructions — setup
+
+Usage: setup.sh [options]
+
+Options:
+  --mode=deep|crash|confirm   Set the tutor mode (seed/update settings)
+  --dir=NAME                  Use a custom instruction directory (default: tutor)
+  --frameworks=all|claude,cursor,copilot,gemini
+                              Integrate with extra agent frameworks
+  --append                    On conflict, append an include block to user-owned files
+  --no-modify                 Never modify user-owned files (print manual snippet instead)
+  --yes                       Non-interactive; use safe defaults (no prompts)
+  --dry-run                   Show what would happen, change nothing
+  --uninstall                 Remove the tutor system (keeps .ai/ state and vault)
+  --strict                    Fail with non-zero exit if any entry point was skipped
+  -h|--help                   Show this help
+EOF
+    exit 0
+}
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --mode=*) MODE="${1#*=}" ;;
+        --dir=*) TUTOR_DIR_NAME="${1#*=}"; TUTOR_DIR="$PROJECT_ROOT/$TUTOR_DIR_NAME" ;;
+        --frameworks=*) FRAMEWORKS="${1#*=}" ;;
+        --append) APPEND_MODE=1 ;;
+        --no-modify) NO_MODIFY=1 ;;
+        --yes) YES=1 ;;
+        --dry-run) DRY_RUN=1 ;;
+        --uninstall) UNINSTALL=1 ;;
+        --strict) STRICT=1 ;;
+        -h|--help) usage ;;
+        *) echo "Unknown option: $1"; usage ;;
+    esac
+    shift
+done
+
+echo "🎓 AI Tutor Instructions"
+echo "========================"
+echo ""
 echo -e "${BLUE}📁 Project root:${NC} $PROJECT_ROOT"
 echo ""
 
-# Check if tutor system already exists
-EXISTING_INSTALL=false
-UPDATE_MODE=false
+interactive() {
+    [[ "$YES" -eq 1 ]] && return 1
+    [[ -t 0 ]]
+}
 
-if [ -f "$PROJECT_ROOT/.ai/tutor-instructions.md" ]; then
-    EXISTING_INSTALL=true
-    echo -e "${YELLOW}🔍 Existing tutor installation detected!${NC}"
+confirm() {
+    local msg="$1"
+    if ! interactive; then
+        echo -e "${YELLOW}ℹ️ (non-interactive) $msg → skipped${NC}"
+        return 1
+    fi
+    read -p "$msg (y/N): " ans < /dev/tty
+    [[ "$ans" =~ ^[Yy]$ ]]
+}
+
+# ---- Source resolution ----
+# The tutor tree ships next to this script in the repo (clone method).
+# For the one-liner (curl-piped) method, the script is downloaded alone and the
+# tree must come from a tarball.
+# Note: source always comes from the repo's canonical "tutor" dir regardless of
+# --dir=NAME, which only changes the target directory name in the project.
+SOURCE_TUTOR="$SCRIPT_DIR/tutor"
+NEED_TARBALL=0
+if [[ ! -d "$SOURCE_TUTOR" || ! -f "$SOURCE_TUTOR/README.md" ]]; then
+    NEED_TARBALL=1
+fi
+
+fetch_tree() {
+    local dest="$1"
+    local url="https://github.com/lawaty/tutor-instructions/archive/refs/heads/main.tar.gz"
+    local tmp
+    tmp="$(mktemp -d)"
+    trap 'rm -rf "$tmp"' EXIT
+    if command -v curl &>/dev/null; then
+        curl -fsSL "$url" -o "$tmp/tutor.tar.gz"
+    elif command -v wget &>/dev/null; then
+        wget -q "$url" -O "$tmp/tutor.tar.gz"
+    else
+        echo -e "${RED}❌ Neither curl nor wget available.${NC}"
+        exit 1
+    fi
+    tar -xzf "$tmp/tutor.tar.gz" -C "$tmp" --strip-components=1
+    mkdir -p "$(dirname "$dest")"
+    cp -R "$tmp/tutor" "$dest"
+}
+
+ensure_installed_tree() {
+    if [[ "$NEED_TARBALL" -eq 1 ]]; then
+        echo "📥 Fetching tutor instruction tree..."
+        fetch_tree "$TUTOR_DIR"
+        return
+    fi
+    # Local copy (clone method)
+    [[ -d "$TUTOR_DIR" ]] && return
+    cp -R "$SOURCE_TUTOR" "$TUTOR_DIR"
+}
+
+# ---- Uninstall ----
+do_uninstall() {
+    echo "🗑️  Uninstalling tutor system (keeps .ai/ state and ~/.ai-tutor/)..."
+
+    # Remove entry points we own / strip include blocks
+    for f in AGENT.md AGENTS.md agents.md CLAUDE.md GEMINI.md .github/copilot-instructions.md .cursor/rules/tutor.mdc .cursorrules; do
+        local path="$PROJECT_ROOT/$f"
+        [[ -f "$path" ]] || continue
+        if grep -q "$ENTRY_MARKER" "$path" 2>/dev/null; then
+            [[ "$DRY_RUN" -eq 1 ]] && { echo "  would remove $f"; continue; }
+            rm -f "$path"
+            echo "  removed $f"
+        elif grep -q "$INCLUDE_START" "$path" 2>/dev/null; then
+            [[ "$DRY_RUN" -eq 1 ]] && { echo "  would strip include block from $f"; continue; }
+            sed -i "/$INCLUDE_START/,/$INCLUDE_END/d" "$path"
+            echo "  stripped include block from $f"
+        fi
+    done
+
+    # Remove tutor tree only if we own it
+    if [[ -f "$TUTOR_DIR/.tutor-manifest" ]]; then
+        [[ "$DRY_RUN" -eq 1 ]] && { echo "  would remove $TUTOR_DIR_NAME/"; }
+        [[ "$DRY_RUN" -eq 0 ]] && rm -rf "$TUTOR_DIR"
+        echo "  removed $TUTOR_DIR_NAME/"
+    fi
+
+    # Remove legacy monolith if ours
+    if [[ -f "$PROJECT_ROOT/.ai/tutor-instructions.md" ]] && head -n 1 "$PROJECT_ROOT/.ai/tutor-instructions.md" | grep -q "$LEGACY_HEADER"; then
+        [[ "$DRY_RUN" -eq 0 ]] && rm -f "$PROJECT_ROOT/.ai/tutor-instructions.md"
+        echo "  removed legacy .ai/tutor-instructions.md"
+    fi
+
     echo ""
-    
-    # Scan current structure
-    echo "📊 Current Tutor Structure:"
-    echo "──────────────────────────────"
-    
-    if [ -f "$PROJECT_ROOT/.ai/tutor-instructions.md" ]; then
-        INST_SIZE=$(wc -l < "$PROJECT_ROOT/.ai/tutor-instructions.md")
-        echo -e "${GREEN}✓${NC} tutor-instructions.md (${INST_SIZE} lines)"
+    echo "✅ Uninstall complete. Your learning state remains in .ai/ and ~/.ai-tutor/."
+    exit 0
+}
+
+if [[ "$UNINSTALL" -eq 1 ]]; then
+    do_uninstall
+fi
+
+# ---- Phase 1: canonical tree ----
+if [[ "$DRY_RUN" -eq 0 ]]; then
+    if [[ -e "$TUTOR_DIR" && ! -f "$TUTOR_DIR/.tutor-manifest" ]]; then
+        echo -e "${RED}❌ '$TUTOR_DIR_NAME/' exists but is not managed by tutor-instructions.${NC}"
+        echo "   Refusing to overwrite it. Use --dir=NAME or rename it manually."
+        exit 1
     fi
-    
-    if [ -f "$PROJECT_ROOT/.ai/tutor-syllabus.md" ]; then
-        SYL_SIZE=$(wc -l < "$PROJECT_ROOT/.ai/tutor-syllabus.md")
-        echo -e "${GREEN}✓${NC} tutor-syllabus.md (${SYL_SIZE} lines)"
-    else
-        echo -e "${YELLOW}○${NC} tutor-syllabus.md (missing)"
+    ensure_installed_tree
+    # Write the manifest after install
+    if [[ ! -f "$TUTOR_DIR/.tutor-manifest" ]]; then
+        ( cd "$TUTOR_DIR" && find . -type f ! -name '.tutor-manifest' | sort | while read -r f; do
+            sha256sum "$f" 2>/dev/null || stat -c '%n' "$f"
+        done > .tutor-manifest )
     fi
-    
-    if [ -f "$PROJECT_ROOT/.ai/tutor-progress.md" ]; then
-        PROG_SIZE=$(wc -l < "$PROJECT_ROOT/.ai/tutor-progress.md")
-        echo -e "${GREEN}✓${NC} tutor-progress.md (${PROG_SIZE} lines)"
-    else
-        echo -e "${YELLOW}○${NC} tutor-progress.md (not created yet)"
+    echo -e "${GREEN}✅ Tutor instruction tree → $TUTOR_DIR_NAME/${NC}"
+else
+    echo -e "${YELLOW}🔍 (dry-run) would verify/install $TUTOR_DIR_NAME/ tree${NC}"
+fi
+
+# ---- Phase 2: entry points ----
+SKIP_COUNT=0
+declare -A FILLED
+
+# write template pointer into a file (thin pointer to the router)
+write_pointer() {
+    local path="$1"
+    local tdir="${2:-$TUTOR_DIR_NAME}"
+    cat > "$path" <<EOF
+<!-- ${ENTRY_MARKER} v=2 target=$tdir/README.md -->
+## AI Tutor System
+
+This project has an AI tutor system installed. At the start of any tutoring or
+learning session, read \`$tdir/README.md\` first and follow its instructions.
+EOF
+}
+
+# check for case-insensitive collision (macOS/Windows)
+case_collision() {
+    local name="$1"
+    find "$PROJECT_ROOT" -maxdepth 1 -iname "$name" 2>/dev/null | grep -qvx "$PROJECT_ROOT/$name"
+}
+
+# handle one entry slot; returns filled/skipped
+ensure_entry() {
+    local path="$1"
+
+    # 0. symlink → always user-owned
+    if [[ -L "$path" ]]; then
+        echo -e "${YELLOW}○ $path is a symlink — leaving untouched${NC}"
+        return 1
     fi
-    
-    if [ -f "$PROJECT_ROOT/.github/copilot-instructions.md" ]; then
-        echo -e "${GREEN}✓${NC} .github/copilot-instructions.md"
-    else
-        echo -e "${YELLOW}○${NC} .github/copilot-instructions.md (missing)"
+
+    # 1. absent → create
+    if [[ ! -e "$path" ]]; then
+        if [[ "$DRY_RUN" -eq 1 ]]; then
+            echo -e "${GREEN}→ would create $path${NC}"
+        else
+            write_pointer "$path"
+            echo -e "${GREEN}✓ created $path${NC}"
+        fi
+        return 0
     fi
-    
-    # Check for practice directories
-    if [ -d "$PROJECT_ROOT/.ai/practice" ]; then
-        PRACTICE_COUNT=$(find "$PROJECT_ROOT/.ai/practice" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
-        if [ "$PRACTICE_COUNT" -gt 0 ]; then
-            echo -e "${YELLOW}⚠${NC}  practice/ directory (${PRACTICE_COUNT} active scenarios)"
+
+    # 2. ours (current) → safe rewrite
+    if grep -q "$ENTRY_MARKER" "$path" 2>/dev/null; then
+        if [[ "$DRY_RUN" -eq 1 ]]; then
+            echo -e "${GREEN}→ would update $path${NC}"
+        else
+            write_pointer "$path"
+            echo -e "${GREEN}✓ updated $path${NC}"
+        fi
+        return 0
+    fi
+
+    # 3. ours (legacy pure-ours) → upgrade
+    if head -n 3 "$path" 2>/dev/null | grep -q "$LEGACY_HEADER"; then
+        if [[ "$DRY_RUN" -eq 1 ]]; then
+            echo -e "${GREEN}→ would upgrade legacy $path${NC}"
+        else
+            write_pointer "$path"
+            echo -e "${GREEN}✓ upgraded legacy $path${NC}"
+        fi
+        return 0
+    fi
+
+    # 4. already integrated → refresh
+    if grep -q "$INCLUDE_START" "$path" 2>/dev/null; then
+        echo -e "${BLUE}ℹ️  $path already integrated${NC}"
+        return 0
+    fi
+
+    # 5. legacy append inside a user file
+    if grep -q "$LEGACY_APPEND" "$path" 2>/dev/null; then
+        if confirm "Replace the old appended tutor block in $path? (content after it is kept)"; then
+            if [[ "$DRY_RUN" -eq 0 ]]; then
+                line=$(grep -n "^$LEGACY_APPEND" "$path" | head -n1 | cut -d: -f1)
+                if [[ -n "$line" ]]; then
+                    sed -i "${line},\$d" "$path"
+                    cat >> "$path" <<EOF
+
+<!-- ${INCLUDE_START} (added by tutor-instructions setup.sh — safe to remove this block) -->
+## AI Tutor System
+
+This project has an AI tutor system installed. At the start of any tutoring or
+learning session, read \`$TUTOR_DIR_NAME/README.md\` first and follow its instructions.
+<!-- ${INCLUDE_END} -->
+EOF
+                fi
+            fi
+            echo -e "${GREEN}✓ replaced legacy block in $path${NC}"
+            return 0
+        fi
+        # fall through to 6
+    fi
+
+    # 6. USER-OWNED, unintegrated → never overwrite
+    if [[ "$APPEND_MODE" -eq 1 ]]; then
+        if [[ "$DRY_RUN" -eq 1 ]]; then
+            echo -e "${GREEN}→ would append include block to $path${NC}"
+        else
+            cat >> "$path" <<EOF
+
+<!-- ${INCLUDE_START} (added by tutor-instructions setup.sh — safe to remove this block) -->
+## AI Tutor System
+
+This project has an AI tutor system installed. At the start of any tutoring or
+learning session, read \`$TUTOR_DIR_NAME/README.md\` first and follow its instructions.
+<!-- ${INCLUDE_END} -->
+EOF
+            echo -e "${GREEN}✓ appended include block to $path${NC}"
+        fi
+        return 0
+    fi
+
+    if [[ "$NO_MODIFY" -eq 1 ]]; then
+        echo -e "${YELLOW}○ $path is user-owned — skipped (--no-modify)${NC}"
+        SKIP_COUNT=$((SKIP_COUNT+1))
+        return 1
+    fi
+
+    if interactive; then
+        echo -e "${YELLOW}⚠ $path already exists (user content).${NC}"
+        if confirm "Append the tutor include block to it? (won't touch existing content)"; then
+            return ensure_entry "$path"  # re-run with append-mode semantics
         fi
     fi
-    
-    echo ""
-    echo -e "${BLUE}Choose an option:${NC}"
-    echo "  1) Update tutor-instructions.md only (preserve syllabus & progress)"
-    echo "  2) Full reinstall (keeps progress.md, resets syllabus)"
-    echo "  3) Complete fresh install (WARNING: deletes all tutor files)"
-    echo "  4) Cancel"
-    echo ""
-    read -p "Enter your choice (1-4): " choice < /dev/tty
-    
-    case $choice in
-        1)
-            UPDATE_MODE=true
-            echo -e "${GREEN}✓${NC} Update mode: Will update instructions only"
-            ;;
-        2)
-            echo -e "${YELLOW}⚠${NC}  Reinstall mode: Will preserve progress.md"
-            # Backup progress if exists
-            if [ -f "$PROJECT_ROOT/.ai/tutor-progress.md" ]; then
-                cp "$PROJECT_ROOT/.ai/tutor-progress.md" "$PROJECT_ROOT/.ai/tutor-progress.md.backup"
-                echo -e "${GREEN}✓${NC} Backed up tutor-progress.md"
-            fi
-            ;;
-        3)
-            echo -e "${RED}⚠${NC}  Fresh install: Removing all tutor files..."
-            rm -rf "$PROJECT_ROOT/.ai/tutor-"* 2>/dev/null || true
-            rm -rf "$PROJECT_ROOT/.ai/practice" 2>/dev/null || true
-            EXISTING_INSTALL=false
-            ;;
-        4)
-            echo "Installation cancelled."
-            exit 0
-            ;;
-        *)
-            echo "Invalid choice. Exiting."
-            exit 1
+    echo -e "${YELLOW}○ $path skipped — add this manually to activate tutor:${NC}"
+    echo "   cat >> $path << 'EOF'"
+    echo "   <!-- ${INCLUDE_START} (added by tutor-instructions setup.sh — safe to remove this block) -->"
+    echo "   ## AI Tutor System"
+    echo "   Read \`$TUTOR_DIR_NAME/README.md\` first and follow its instructions."
+    echo "   <!-- ${INCLUDE_END} -->"
+    echo "   EOF"
+    SKIP_COUNT=$((SKIP_COUNT+1))
+    return 1
+}
+
+# choose framework slots based on FRAMEWORKS
+slots=()
+slots+=("AGENT.md")
+slots+=("AGENTS.md")  # cross-tool standard (Codex, Amp, GitHub agent)
+
+if [[ "$FRAMEWORKS" =~ (^|,)claude($|,) ]] || [[ "$FRAMEWORKS" =~ claude ]] || [[ "$FRAMEWORKS" == "all" ]] || [[ -f "$PROJECT_ROOT/CLAUDE.md" || -d "$PROJECT_ROOT/.claude" ]]; then
+    slots+=("CLAUDE.md")
+fi
+if [[ "$FRAMEWORKS" =~ cursor ]] || [[ "$FRAMEWORKS" == "all" ]] || [[ -d "$PROJECT_ROOT/.cursor" ]]; then
+    slots+=(".cursor/rules/tutor.mdc")
+fi
+if [[ "$FRAMEWORKS" =~ copilot ]] || [[ "$FRAMEWORKS" == "all" ]] || [[ -f "$PROJECT_ROOT/.github/copilot-instructions.md" ]]; then
+    slots+=(".github/copilot-instructions.md")
+fi
+if [[ "$FRAMEWORKS" =~ gemini ]] || [[ "$FRAMEWORKS" == "all" ]]; then
+    slots+=("GEMINI.md")
+fi
+
+# agents.md variant — treated as one slot with AGENTS.md
+agents_occupied=0
+if [[ -e "$PROJECT_ROOT/agents.md" || -e "$PROJECT_ROOT/AGENTS.md" ]]; then
+    agents_occupied=1
+fi
+
+echo ""
+echo "⚙️  Setting up entry points..."
+
+# Handle AGENT.md with case-insensitivity guard
+if case_collision "AGENT.md" && [[ ! -e "$PROJECT_ROOT/AGENT.md" ]]; then
+    echo -e "${YELLOW}○ AGENT.md exists with different case (agent.md) — treating slot as occupied${NC}"
+    SKIP_COUNT=$((SKIP_COUNT+1))
+else
+    ensure_entry "$PROJECT_ROOT/AGENT.md" || true
+fi
+
+# Handle AGENTS.md/agents.md slot
+if [[ "$agents_occupied" -eq 1 ]]; then
+    # see if ours or user's
+    target=""
+    for cand in AGENTS.md agents.md; do
+        [[ -e "$PROJECT_ROOT/$cand" ]] && { target="$PROJECT_ROOT/$cand"; break; }
+    done
+    ensure_entry "$target" || true
+else
+    mkdir -p "$PROJECT_ROOT"
+    ensure_entry "$PROJECT_ROOT/AGENTS.md"
+fi
+
+for slot in "${slots[@]:2}"; do
+    case "$slot" in
+        CLAUDE.md|GEMINI.md|.github/copilot-instructions.md|.cursor/rules/tutor.mdc)
+            mkdir -p "$PROJECT_ROOT/$(dirname "$slot")"
+            ensure_entry "$PROJECT_ROOT/$slot" || true
             ;;
     esac
-    echo ""
+done
+
+# ---- Phase 3: legacy migration ----
+# Remove legacy monolith inside .ai/ after tree installed (ours only)
+if [[ -f "$PROJECT_ROOT/.ai/tutor-instructions.md" ]] && head -n 1 "$PROJECT_ROOT/.ai/tutor-instructions.md" | grep -q "$LEGACY_HEADER"; then
+    if [[ "$DRY_RUN" -eq 0 ]]; then
+        rm -f "$PROJECT_ROOT/.ai/tutor-instructions.md"
+        echo -e "${GREEN}✓ removed legacy .ai/tutor-instructions.md (superseded by $TUTOR_DIR_NAME/)${NC}"
+    else
+        echo -e "${YELLOW}→ would remove legacy .ai/tutor-instructions.md${NC}"
+    fi
 fi
 
-echo "📁 Project root: $PROJECT_ROOT"
-
-# Create .ai directory if it doesn't exist
-if [ ! -d "$PROJECT_ROOT/.ai" ]; then
-    echo "📂 Creating .ai directory..."
-    mkdir -p "$PROJECT_ROOT/.ai"
-fi
-
-# Create lessons directories
-echo "📚 Setting up lesson directories..."
+# ---- Phase 4: state setup ----
+echo ""
+echo "📂 Setting up state..."
 mkdir -p "$PROJECT_ROOT/.ai/lessons"
 mkdir -p "$PROJECT_ROOT/.ai/lessons/archive"
-
-# Create additional directories
-echo "📂 Setting up additional directories..."
 mkdir -p "$PROJECT_ROOT/.ai/cheatsheets"
-mkdir -p "$PROJECT_ROOT/.ai/incidents"
 
-# Create global progress vault if it doesn't exist
+# Global vault
 VAULT_DIR="$HOME/.ai-tutor"
-if [ ! -d "$VAULT_DIR" ]; then
-    echo "🏦 Creating global progress vault at ~/.ai-tutor/..."
-    mkdir -p "$VAULT_DIR/cheatsheets"
-    mkdir -p "$VAULT_DIR/projects"
-    cat > "$VAULT_DIR/README.md" << 'VAULTEOF'
+if [[ ! -d "$VAULT_DIR" ]]; then
+    if [[ "$DRY_RUN" -eq 1 ]]; then
+        echo -e "${YELLOW}→ would initialize vault at ~/.ai-tutor/${NC}"
+    else
+        mkdir -p "$VAULT_DIR/cheatsheets"
+        mkdir -p "$VAULT_DIR/projects"
+        cat > "$VAULT_DIR/README.md" << 'VAULTEOF'
 # AI Tutor — Progress Vault
 
 This directory stores your learning progress across all projects.
 It persists even when you start new projects or switch machines (if Git-backed).
-
-## How it works
-
-- Every time you confirm a topic, it's recorded here AND in your project's `.ai/` directory
-- When you start a new project, the tutor checks this vault to see what you already know
-- Cheat sheets accumulate here as a permanent reference library
-
-## Optional: Cross-machine sync
-
-To sync across machines, initialize this as a Git repo:
-
-```bash
-cd ~/.ai-tutor
-git init
-git remote add origin git@github.com:YOUR_USER/ai-tutor-progress.git
-git add -A && git commit -m "init vault" && git push
-```
-
-Then on another machine:
-```bash
-git clone git@github.com:YOUR_USER/ai-tutor-progress.git ~/.ai-tutor
-```
-
-The tutor will auto-commit changes. You just need to push/pull when switching machines.
 VAULTEOF
-    cat > "$VAULT_DIR/global-progress.md" << 'PROGRESSEOF'
+        cat > "$VAULT_DIR/global-progress.md" << 'PROGRESSEOF'
 # Global Learning Progress
 
 **Last updated**: (auto-updated by tutor)
 **Total topics confirmed**: 0
 **Projects tracked**: 0
-
-## Confirmed Skills (cross-project)
-
-(Topics will appear here as you confirm them across projects)
 PROGRESSEOF
-    cat > "$VAULT_DIR/stats.md" << 'STATSEOF'
+        cat > "$VAULT_DIR/stats.md" << 'STATSEOF'
 # Learning Statistics
 
-**Learning started**: (auto-detected on first topic confirmation)
 **Total study sessions**: 0
 **Total topics confirmed**: 0
 **Total quizzes taken**: 0
-**Average quiz score**: N/A
-
-## Monthly Summary
-
-(Monthly breakdowns will appear here as you progress)
 STATSEOF
-    echo "✅ Global progress vault initialized at ~/.ai-tutor/"
-else
-    echo "ℹ️  Global progress vault already exists at ~/.ai-tutor/"
-fi
-
-# Download or copy tutor instructions
-TUTOR_INSTRUCTIONS_URL="https://raw.githubusercontent.com/lawaty/tutor-instructions/main/tutor-instructions.md"
-
-if [ "$UPDATE_MODE" = true ]; then
-    echo "📥 Updating tutor-instructions.md..."
-else
-    echo "📥 Installing tutor instructions..."
-fi
-
-# Try to download if URL is accessible, otherwise copy from local
-if command -v curl &> /dev/null; then
-    if [ -f "$(dirname "$0")/tutor-instructions.md" ]; then
-        # Running from cloned repo
-        cp "$(dirname "$0")/tutor-instructions.md" "$PROJECT_ROOT/.ai/tutor-instructions.md"
-    else
-        # Download from GitHub
-        curl -fsSL "$TUTOR_INSTRUCTIONS_URL" -o "$PROJECT_ROOT/.ai/tutor-instructions.md"
-    fi
-elif command -v wget &> /dev/null; then
-    if [ -f "$(dirname "$0")/tutor-instructions.md" ]; then
-        cp "$(dirname "$0")/tutor-instructions.md" "$PROJECT_ROOT/.ai/tutor-instructions.md"
-    else
-        wget -q "$TUTOR_INSTRUCTIONS_URL" -O "$PROJECT_ROOT/.ai/tutor-instructions.md"
+        echo -e "${GREEN}✅ Global progress vault initialized at ~/.ai-tutor/${NC}"
     fi
 else
-    echo "❌ Error: Neither curl nor wget is available. Please install one of them."
-    exit 1
+    echo -e "${BLUE}ℹ️  Global progress vault already exists${NC}"
 fi
 
-echo "✅ Tutor instructions installed to .ai/tutor-instructions.md"
-
-# If update mode, update copilot-instructions.md too, then exit
-if [ "$UPDATE_MODE" = true ]; then
-    # Also update copilot-instructions.md
-    COPILOT_FILE="$PROJECT_ROOT/.github/copilot-instructions.md"
-    if [ -f "$COPILOT_FILE" ]; then
-        cp "$PROJECT_ROOT/.ai/tutor-instructions.md" "$COPILOT_FILE"
-        echo "✅ Updated .github/copilot-instructions.md"
-    fi
-
-    echo ""
-    echo "======================================"
-    echo "✨ AI Tutor Update Complete! ✨"
-    echo "======================================"
-    echo ""
-    echo "📊 Updated:"
-    echo "   - .ai/tutor-instructions.md (latest version)"
-    echo "   - .github/copilot-instructions.md (latest version)"
-    echo ""
-    echo "📊 Preserved:"
-    echo "   - .ai/tutor-syllabus.md (your custom syllabus)"
-    echo "   - .ai/tutor-progress.md (your learning progress)"
-    echo "   - .ai/playground/ (your code)"
-    echo "   - .ai/quizzes/ (your quiz history)"
-    echo "   - .ai/lessons/ (your lessons)"
-    echo "   - .ai/cheatsheets/ (your reference cards)"
-    echo "   - .ai/incidents/ (your incident scenarios)"
-    echo "   - ~/.ai-tutor/ (your global progress vault)"
-    echo ""
-    echo "💡 Restart your AI assistant to use the updated instructions!"
-    echo ""
-    exit 0
-fi
-
-# Setup GitHub Copilot instructions
-COPILOT_DIR="$PROJECT_ROOT/.github"
-COPILOT_FILE="$COPILOT_DIR/copilot-instructions.md"
-
-echo ""
-echo "⚙️  Setting up GitHub Copilot integration..."
-
-# Create .github directory if needed
-if [ ! -d "$COPILOT_DIR" ]; then
-    mkdir -p "$COPILOT_DIR"
-fi
-
-# Add tutor instructions to copilot-instructions.md
-if [ -f "$COPILOT_FILE" ]; then
-    # Check if already integrated
-    if grep -q "SENIOR TUTOR AGENT INSTRUCTIONS" "$COPILOT_FILE"; then
-        echo "ℹ️  Tutor instructions already in copilot-instructions.md"
-    else
-        echo "" >> "$COPILOT_FILE"
-        echo "# AI Tutor Mode" >> "$COPILOT_FILE"
-        echo "Include instructions from .ai/tutor-instructions.md" >> "$COPILOT_FILE"
-        echo "" >> "$COPILOT_FILE"
-        cat "$PROJECT_ROOT/.ai/tutor-instructions.md" >> "$COPILOT_FILE"
-        echo "✅ Tutor instructions added to existing copilot-instructions.md"
-    fi
-else
-    # Create new file
-    cat "$PROJECT_ROOT/.ai/tutor-instructions.md" > "$COPILOT_FILE"
-    echo "✅ Created .github/copilot-instructions.md"
-fi
-
-# Create .gitignore entries if needed
-GITIGNORE="$PROJECT_ROOT/.gitignore"
-echo ""
-echo "📝 Updating .gitignore..."
-
-if [ -f "$GITIGNORE" ]; then
-    if ! grep -q ".ai/tutor-progress.md" "$GITIGNORE"; then
-        echo "" >> "$GITIGNORE"
-        echo "# AI Tutor Progress (personal)" >> "$GITIGNORE"
-        echo ".ai/tutor-progress.md" >> "$GITIGNORE"
-        echo "✅ Added .ai/tutor-progress.md to .gitignore"
-    else
-        echo "ℹ️  .gitignore already configured"
-    fi
-else
-    echo "# AI Tutor Progress (personal)" > "$GITIGNORE"
-    echo ".ai/tutor-progress.md" >> "$GITIGNORE"
-    echo "✅ Created .gitignore"
-fi
-
-# Create placeholder files (will be auto-generated by agent)
-echo ""
-echo "📋 Setting up tracker files..."
-
-if [ ! -f "$PROJECT_ROOT/.ai/tutor-syllabus.md" ]; then
-    cat > "$PROJECT_ROOT/.ai/tutor-syllabus.md" << 'EOF'
-# Tutor Syllabus
-
-## Authoritative Sources
-Primary: (To be defined based on tech stack)
-Secondary: Official Documentation
-
-## Topics
-(Will be auto-generated on first interaction with AI tutor)
-
-To customize:
-1. Add your preferred books/resources under "Authoritative Sources"
-2. Define topic order and depth
-3. The AI tutor will follow this syllabus strictly
+# Settings seeding
+SETTINGS="$PROJECT_ROOT/.ai/tutor-settings.md"
+if [[ ! -f "$SETTINGS" ]]; then
+    if [[ "$DRY_RUN" -eq 0 ]]; then
+        cat > "$SETTINGS" <<EOF
+# Tutor Settings
+mode: $MODE
+study_gap_threshold_days: 3
 EOF
-    echo "✅ Created placeholder tutor-syllabus.md"
+        echo -e "${GREEN}✅ Created .ai/tutor-settings.md (mode: $MODE)${NC}"
+    else
+        echo -e "${YELLOW}→ would create .ai/tutor-settings.md (mode: $MODE)${NC}"
+    fi
+elif [[ -n "$MODE" && "$MODE" != "deep" ]]; then
+    # update mode line if explicitly requested via --mode
+    if [[ "$DRY_RUN" -eq 0 ]]; then
+        if grep -q '^mode:' "$SETTINGS" 2>/dev/null; then
+            sed -i "s/^mode:.*/mode: $MODE/" "$SETTINGS"
+        else
+            echo "mode: $MODE" >> "$SETTINGS"
+        fi
+        echo -e "${GREEN}✅ Set mode: $MODE in settings${NC}"
+    else
+        echo -e "${YELLOW}→ would set mode: $MODE in settings${NC}"
+    fi
 else
-    echo "ℹ️  tutor-syllabus.md already exists (preserved)"
+    echo -e "${BLUE}ℹ️  .ai/tutor-settings.md preserved${NC}"
 fi
 
-# Restore progress backup if in reinstall mode
-if [ -f "$PROJECT_ROOT/.ai/tutor-progress.md.backup" ]; then
-    mv "$PROJECT_ROOT/.ai/tutor-progress.md.backup" "$PROJECT_ROOT/.ai/tutor-progress.md"
-    echo "✅ Restored tutor-progress.md from backup"
+# .gitignore
+GITIGNORE="$PROJECT_ROOT/.gitignore"
+if [[ "$DRY_RUN" -eq 0 ]]; then
+    if [[ -f "$GITIGNORE" ]]; then
+        if ! grep -q ".ai/tutor-progress.md" "$GITIGNORE"; then
+            echo "" >> "$GITIGNORE"
+            echo "# AI Tutor Progress (personal)" >> "$GITIGNORE"
+            echo ".ai/tutor-progress.md" >> "$GITIGNORE"
+            echo -e "${GREEN}✅ Added .ai/tutor-progress.md to .gitignore${NC}"
+        fi
+    else
+        echo "# AI Tutor Progress (personal)" > "$GITIGNORE"
+        echo ".ai/tutor-progress.md" >> "$GITIGNORE"
+        echo -e "${GREEN}✅ Created .gitignore${NC}"
+    fi
+else
+    echo -e "${YELLOW}→ would update .gitignore${NC}"
 fi
 
-# Success message
+# ---- Summary ----
 echo ""
 echo "======================================"
 echo "✨ AI Tutor Setup Complete! ✨"
 echo "======================================"
 echo ""
+echo "Your coding agent should now act as a tutor. Restart your agent if needed."
+echo "Your .ai/ state and ~/.ai-tutor/ vault are preserved by the installer."
+echo ""
+echo "📦 Tip: commit AGENT.md, AGENTS.md, and $TUTOR_DIR_NAME/ so your team shares the tutor."
+echo "   (.ai/tutor-progress.md stays gitignored as personal state.)"
+echo ""
 
-if [ "$EXISTING_INSTALL" = true ]; then
-    echo "� Installation Summary:"
-    echo "   ✓ Updated: .ai/tutor-instructions.md"
-    if [ -f "$PROJECT_ROOT/.ai/tutor-progress.md" ]; then
-        echo "   ✓ Preserved: .ai/tutor-progress.md (your learning history)"
-    fi
-    echo "   ✓ Preserved: .ai/tutor-syllabus.md (your custom syllabus)"
-else
-    echo "�📁 Files created:"
-    echo "   - .ai/tutor-instructions.md"
-    echo "   - .ai/tutor-syllabus.md (placeholder)"
-    echo "   - .github/copilot-instructions.md"
+if [[ "$STRICT" -eq 1 && "$SKIP_COUNT" -gt 0 ]]; then
+    exit 1
 fi
-
-echo ""
-echo "🎯 Next steps:"
-echo "   1. Edit .ai/tutor-syllabus.md to customize your learning path"
-echo "   2. Start working with GitHub Copilot - it will now act as your tutor"
-echo "   3. Progress will be tracked in .ai/tutor-progress.md (auto-created)"
-echo "   4. Global progress persists at ~/.ai-tutor/ across all projects"
-echo "   5. (Optional) Set up cross-machine sync: cd ~/.ai-tutor && git init"
-echo ""
-echo "💡 Tip: Ask your AI assistant to 'build a feature' and watch it teach first!"
-echo ""
+exit 0

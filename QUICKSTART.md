@@ -8,18 +8,27 @@ Run this from your project root — works for **both** fresh installs and update
 bash <(curl -fsSL https://raw.githubusercontent.com/lawaty/tutor-instructions/main/setup.sh)
 ```
 
-On a fresh project it sets everything up. On an existing install it detects your files and lets you choose what to update (your progress, syllabus, playground, and quizzes are preserved).
+On a fresh project it sets everything up: `tutor/` tree + `AGENT.md`/`AGENTS.md` pointers. On an existing install it safely updates only what it owns, preserving `.ai/` state and the vault. It never overwrites your existing instruction files.
+
+### Choose Your Mode
+
+```bash
+# Seed the mode during install
+bash <(curl -fsSL https://raw.githubusercontent.com/lawaty/tutor-instructions/main/setup.sh) --mode=confirm
+
+# Or switch anytime in chat / settings
+edit .ai/tutor-settings.md   # mode: deep | crash | confirm
+```
+
+- **deep** — full lessons, quizzes, spaced repetition (default)
+- **crash** — fast-track, few hours or less per unit
+- **confirm** — no course; confirm concepts before use, micro-lessons or skips
 
 ### Alternative: Clone Method
 
 ```bash
-# First time
-git clone https://github.com/lawaty/tutor-instructions.git .ai/tutor-instructions
-bash .ai/tutor-instructions/setup.sh
-
-# To update later
-cd .ai/tutor-instructions && git pull && cd ../..
-bash .ai/tutor-instructions/setup.sh
+git clone https://github.com/lawaty/tutor-instructions.git .tutor-instructions
+cd .tutor-instructions && ./setup.sh && cd ..
 ```
 
 ---
@@ -31,16 +40,15 @@ After setup, try this with your AI assistant:
 **You:** "Build a Laravel API endpoint with validation and policies"
 
 **Expected Behavior:**
-- Agent checks your progress
-- Identifies missing prerequisites
-- Teaches each concept one-by-one
-- Only implements after all prerequisites confirmed
+- Agent checks your progress / known concepts
+- Identifies missing prerequisites and teaches/confirms them
+- Only implements after prerequisites are addressed (per your mode)
 
 ---
 
 ## Customization
 
-### Change Tech Stack
+### Change Tech Stack (Deep/Crash)
 Edit `.ai/tutor-syllabus.md`:
 ```md
 ## Authoritative Sources
@@ -50,34 +58,38 @@ Secondary: Official Docs
 ## Topics
 1. Topic one
 2. Topic two
-...
 ```
 
-### Multiple Projects
-Run the same command in each project:
-```bash
-cd /path/to/project
-bash <(curl -fsSL https://raw.githubusercontent.com/lawaty/tutor-instructions/main/setup.sh)
-```
+### Check Known Concepts (Confirm)
+Edits happen automatically in `.ai/learnt-syllabus.md` — view it to see what you've marked learnt vs. skipped.
+
+### Other Projects
+Run the same command in each project. Progress carries across via `~/.ai-tutor/` (opt-in).
 
 ---
 
 ## Troubleshooting
 
 ### "Agent not acting as tutor"
-- Verify `.github/copilot-instructions.md` contains the tutor instructions
-- Restart VS Code
-- Clear GitHub Copilot cache
+- Verify `AGENT.md` (or `AGENTS.md`) exists and points to `tutor/README.md`
+- Confirm your agent reads that instruction file (some use `AGENTS.md` — we create both by default)
+- Restart your agent/session
+
+### "Mode not applied"
+- Check `mode:` in `.ai/tutor-settings.md`
+- Or just say "switch to crash mode" in chat
 
 ### "Syllabus not auto-generated"
 - Make sure `.ai` directory exists
-- Agent will create on first interaction
+- Agent will create it on first interaction (Deep/Crash)
 - You can manually create from examples/
 
 ### "Progress not tracking"
-- Check `.ai/tutor-progress.md` exists
-- Agent needs write permission to .ai/ directory
-- Ensure you're confirming understanding when prompted
+- Check the relevant file exists (`tutor-progress.md` for Deep/Crash, `learnt-syllabus.md` for Confirm)
+- Agent needs write permission to `.ai/`
+
+### "Existing AGENT.md was mine and got modified?"
+- It wasn't overwritten — at most a small marked pointer block was appended to the end. Remove that block to revert, or see `--no-modify`.
 
 ---
 

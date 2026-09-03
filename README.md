@@ -1,16 +1,24 @@
 # AI Tutor Instructions System
 
-This repository contains a structured tutor system that transforms your AI coding assistant into a senior technical mentor focused on **teaching** rather than just implementing solutions.
+This repository contains a structured tutor system that transforms your AI coding assistant into a senior technical mentor focused on **teaching** rather than just implementing solutions. It is **framework-agnostic** — it works with any coding agent that reads `AGENT.md`/`AGENTS.md` (or your preferred instruction file).
 
 ## 🎯 What This Does
 
 When integrated into your project, the AI will:
-- ✅ Require you to understand prerequisites before implementing features
-- ✅ Follow a structured syllabus based on authoritative sources (books, documentation)
-- ✅ Track your learning progress
-- ✅ Teach concepts one at a time with clear explanations
-- ✅ Guide step-by-step implementation rather than dumping code
-- ✅ Ensure you can work independently without AI assistance
+- ✅ Teach you the concepts you need, in one of three modes you choose
+- ✅ Only load the instructions relevant to the current mode (small contexts, works with small models)
+- ✅ Track what you know so it never re-asks about confirmed concepts
+- ✅ Work alongside your existing project files without overwriting them
+
+## ✨ The Three Modes
+
+| Mode | Purpose | Pace | Best For |
+| ---- | ------- | ---- | -------- |
+| **Deep Learn** | Comprehensive, long-term mastery — full lessons, file-based quizzes, spaced repetition, playground, meta-learning | Thorough | Committing to really learn a stack/framework |
+| **Crash Learn** | Fast-track, actionable — each lesson completable in a few hours or less, minimal theory, quick-check | Speed | Getting productive fast on a narrow task |
+| **Confirm** | Just-in-time — no course; before each non-trivial action, confirms you know the concepts, offers a 5–15 min micro-lesson or a recorded skip | Async with your work | Working on real projects, learning as you go |
+
+You pick a mode once (default **Deep**); switch anytime in chat or via `.ai/tutor-settings.md`.
 
 ## 🚀 Quick Start
 
@@ -20,216 +28,92 @@ Run this from your project root — works for **both fresh installs and updates*
 bash <(curl -fsSL https://raw.githubusercontent.com/lawaty/tutor-instructions/main/setup.sh)
 ```
 
-That's it. The script detects whether you have an existing install and acts accordingly.
+The script installs the `tutor/` instruction tree and creates entry-point files (`AGENT.md` + `AGENTS.md` by default). If your project already has its own `AGENT.md`/`AGENTS.md`/`CLAUDE.md`, it **never overwrites them** — it offers to append a small marked pointer block, or you can skip and add it manually.
 
 ### Alternative Methods
 
-See **[INSTALL.md](INSTALL.md)** for:
-- Clone-based installation (offline/pinned versions)
-- Update options explained
-- Setup verification
+See **[INSTALL.md](INSTALL.md)** for clone-based install, `--mode`/`--frameworks` flags, and conflict behavior.
 
 ## 📁 What Gets Created
 
-After setup, your project will have:
-
 ```
-your-project/ 
-├── .ai/
-│   ├── tutor-instructions.md      # Core tutor instructions
-│   ├── tutor-syllabus.md          # Auto-generated syllabus (created on first use)
-│   ├── tutor-progress.md          # Your learning progress tracker
-│   ├── study-sessions.md          # Study date/time tracking for spaced repetition
-│   ├── lessons/                   # Active + archived lesson documents
-│   ├── playground/                # Persistent code workspace
-│   ├── quizzes/                   # Quiz files + archive
-│   ├── revisions/                 # Revision sessions with summaries & exercises
-│   ├── cheatsheets/               # Auto-generated reference cards
-│   ├── incidents/                 # Production incident simulations
-│   ├── mistakes/                  # Mistake reflection logs by topic area
-│   └── notes/                     # Your notes in your own words (quality-tracked)
-└── .github/
-    └── copilot-instructions.md    # GitHub Copilot instructions
-
-~/.ai-tutor/                       # Global progress vault (cross-project)
-├── global-progress.md
-├── cheatsheets/
-├── projects/
-└── stats.md
+your-project/
+├── AGENT.md                     # Thin pointer → tutor/README.md (yours or appended to yours)
+├── AGENTS.md                    # Cross-tool standard pointer
+├── tutor/
+│   ├── README.md                # The router — loads only what's needed
+│   ├── shared/                  # Cross-mode logic (bootstrap, principles, etc.)
+│   ├── deep/                    # Deep Learn Mode
+│   ├── crash/                   # Crash Learn Mode
+│   └── confirm/                 # Confirm Mode
+│   └── .tutor-manifest          # Ownership marker (never hand-edit)
+├── .ai/                         # Runtime STATE (your data — never overwritten)
+│   ├── tutor-settings.md        # mode + behavior settings
+│   ├── tutor-syllabus.md        # (Deep/Crash) your syllabus
+│   ├── tutor-progress.md        # (Deep/Crash) confirmed topics
+│   ├── learnt-syllabus.md       # (Confirm) known/unknown concepts
+│   └── lessons/  quizzes/  playground/  cheatsheets/  ...
+└── ~/.ai-tutor/                 # Global progress vault (cross-project)
 ```
 
-## 🎓 How It Works
+## 🧠 How It Works
 
-### 1. **Bootstrap Phase**
-On first interaction, the tutor automatically:
-- Detects your tech stack
-- Creates a default syllabus
-- Initializes progress tracking
+### Small Contexts by Design
 
-### 2. **Task Handling**
-When you request a feature:
-1. Agent identifies required prerequisites
-2. Checks your confirmed knowledge
-3. Teaches missing concepts one-by-one
-4. Only helps implement after prerequisites are met
+The system is a **lazy-loaded router**. The entry files are tiny pointers; the router at `tutor/README.md` is ~60 lines. Individual modes load their own instructions and drill down into sub-files only when needed:
 
-### 3. **Teaching Mode**
-For each concept:
-- Clear explanation with examples
-- Production context and "why it matters"
-- Confirmation of understanding required
-- Progress tracking with your approval
-
-### 4. **Advanced Learning Modes**
-Beyond standard lessons and quizzes — all woven into the learning journey:
-
-**Cognitive Training:**
-- **Prediction Questions** — asked before every lesson to prime the brain and exploit the generation effect
-- **Teach Back Mechanism** — explain it as if teaching a junior dev; exposes gaps you didn't know you had
-- **Recall-From-Memory Prompts** — spontaneous in-session recall checks on prior confirmed topics
-- **Code-From-Memory Challenges** — timed, no-reference coding tasks to build genuine fluency
-- **Struggle Window** — every exercise follows: problem → attempt → hint 1 → hint 2 → solution (never skip ahead)
-
-**Code Analysis & Reflection:**
-- **Code Review Training** — review flawed production code (reverse direction)
-- **Reverse Engineering Tasks** — given code, analyze what it does, why, and what design decisions it reflects
-- **Refactoring Challenges** — restructure working but messy real-world code
-
-**Production Simulation:**
-- **Production Incident Simulator** — diagnose and fix realistic on-call scenarios with post-mortems
-- **Open-Source Scavenger Hunts** — explore real framework internals to understand how concepts are truly implemented
-
-**Knowledge Management:**
-- **Note-Taking System** — prompted after every lesson; tutor checks quality signals (summarized ideas, learner phrasing, examples) — not correctness
-- **Mistake Reflection Log** — every significant error captured as a diagnostic entry with root-cause analysis and resolution tracking
-- **Cheat Sheet Generator** — auto-generated reference cards per topic
-
-**Meta-Cognition:**
-- **Meta-Learning Lessons** — dedicated lessons on HOW to debug, read codebases, read documentation, understand frameworks, and how memory and learning actually work
-
-**Cross-Cutting:**
-- **Cross-Topic Integration Quizzes** — combine 4-5 topics in one realistic scenario after every section
-
-### 5. **Spaced Repetition & Revision System**
-Long-term retention through evidence-based review:
-- **Session Tracking** — logs all study dates and times automatically
-- **Smart Reminders** — recommends revision when you haven't studied for 3+ days
-- **Review Schedules** — calculates optimal review dates (1 day, 3 days, 1 week, etc.)
-- **Revision Sessions** — generates comprehensive reviews with:
-  - Summarized refreshers of each topic
-  - Hands-on exercises (recall challenges, integration tasks, code explanation)
-  - Reflection questions to deepen understanding
-- **Adaptive Intervals** — adjusts review frequency based on your retention strength
-- **Study Streak Tracking** — maintains motivation with consecutive day counts
-
-### 6. **Persistent Progress Vault**
-Your learning progress persists across projects via `~/.ai-tutor/`:
-- Confirmed topics carry over to new projects (opt-in)
-- Cheat sheets accumulate into a personal reference library
-- Stats track your learning journey over time
-- Optional Git-backed sync for cross-machine persistence
-
-## 📚 Authoritative Sources
-
-You can specify books, papers, or documentation as the primary teaching source:
-
-**Example `tutor-syllabus.md`:**
-```md
-## Authoritative Sources
-Primary: "Laravel: Up & Running" — Matt Stauffer
-Secondary: Laravel Official Documentation
+```
+AGENT.md ──▶ tutor/README.md ──▶ tutor/<mode>/mode.md ──▶ sub-files on trigger
 ```
 
-The tutor will:
-- Follow the book's topic order
-- Use the book's terminology and approach
-- Reference sections explicitly
-- Avoid shortcuts that contradict the source
+An agent never ingests the whole tree at once — it loads the router plus only the relevant mode file. This keeps context small and usable with small free models.
 
-## 🛠️ Customization
+### State vs. Instructions Are Separated
 
-### Update Syllabus
-Edit `.ai/tutor-syllabus.md` to:
-- Add/remove topics
-- Change topic order
-- Specify authoritative sources
-- Adjust depth and focus
+- **Instructions** (`tutor/`) are updated by the installer.
+- **State** (`.ai/`, `~/.ai-tutor/`) is your data and is **never touched** by the installer.
 
-### Reset Progress
-```bash
-rm .ai/tutor-progress.md
-# Will be recreated on next interaction
-```
+## 🎓 Modes in Action
 
-### Add Multiple Tech Stacks
-Create separate syllabi:
-```
-.ai/
-├── tutor-syllabus-laravel.md
-├── tutor-syllabus-react.md
-└── tutor-syllabus-devops.md
-```
+- **Deep**: strict tutor — lesson doc, "try it yourself" in the playground, file-based quiz (must pass), progress confirmation, spaced repetition, adaptive assistance levels, cheat sheets.
+- **Crash**: fast-lane tutor — brief → demo → do → quick-check → confirm. Time-boxed; a simple review list replaces the spaced-repetition algorithm.
+- **Confirm**: just-in-time tutor — before a non-trivial action, asks "Do you know X, or want a 5-minute rundown?" and records results in `.ai/learnt-syllabus.md` so it never re-asks about the same concept.
 
-## 🔧 Maintenance
+## 🔧 Customization
 
-### Update Instructions
-```bash
-cd .ai/tutor-instructions
-git pull origin main
-cp tutor-instructions.md ../tutor-instructions.md
-```
+- **Mode**: edit `mode:` in `.ai/tutor-settings.md`, or just say "switch to crash mode".
+- **Syllabus**: edit `.ai/tutor-syllabus.md` (Deep/Crash) to set topics and authoritative sources.
+- **Confirm known concepts**: entries live in `.ai/learnt-syllabus.md`.
 
-### Share Progress Across Projects
-Progress is automatically shared via the global vault at `~/.ai-tutor/`.
-To sync across machines, back it with a private Git repo:
-```bash
-cd ~/.ai-tutor
-git init
-git remote add origin git@github.com:YOUR_USER/ai-tutor-progress.git
-git add -A && git commit -m "init" && git push
-```
+## 🛡️ Compatibility with Existing Projects
 
-On another machine:
-```bash
-git clone git@github.com:YOUR_USER/ai-tutor-progress.git ~/.ai-tutor
-```
+The installer treats every instruction file as **owned** (by this system) or **user-owned**:
+- Owned (ours) → safely rewritten/updated.
+- User-owned → **never overwritten**; a small marked pointer block is appended (with your consent) or skipped with a manual snippet shown.
 
-## 💡 Example Interaction
+Backup your own `AGENT.md`? Not needed — the installer never destroys it. It also handles case-insensitive filesystems (macOS) and symlinked entry files safely. See [INSTALL.md](INSTALL.md#conflict-handling).
+
+## 💡 Example Interaction (Deep Mode)
 
 ```
 You: "Build a Laravel API endpoint with validation and policies"
 
-Agent: "I've checked your progress. To build this feature, you need 
-       to understand:
+Agent: "I've checked your progress. To build this you need:
        1. Laravel Validation
        2. Authorization Policies
-       
-       Let's start with Laravel Validation...
-       [Teaches validation with examples]
-       
-       Do you understand how validation works?"
-
-You: "Yes, I understand"
-
-Agent: "Great! Can I mark 'Laravel Validation' as confirmed in your 
-       progress tracker?"
-
-You: "Yes"
-
-Agent: "Now let's learn about Authorization Policies...
-       [Continues teaching]"
+       Let's start with Validation... [teaches, then creates a quiz file]
+       Open .ai/quizzes/validation-quiz.md and fill it in."
 ```
 
 ## 🤝 Contributing
 
-Suggestions for improving the tutor system are welcome! Please submit issues or PRs.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Suggestions welcome via issues/PRs.
 
 ## 📄 License
 
-MIT License - Feel free to use and modify for your projects.
+MIT License — feel free to use and modify for your projects.
 
 ## 🔗 Links
 
 - [GitHub Repository](https://github.com/lawaty/tutor-instructions)
-- [Documentation](https://github.com/lawaty/tutor-instructions/wiki)
 - [Issues](https://github.com/lawaty/tutor-instructions/issues)
