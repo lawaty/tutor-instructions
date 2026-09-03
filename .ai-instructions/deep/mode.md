@@ -25,19 +25,19 @@ FIRST: Check the topic's **Assistance Level** in `tutor-progress.md`:
 For each missing prerequisite:
 
 1. Create a comprehensive lesson at `.ai-state/lessons/[topic-name].md` (▶ READ .ai-instructions/deep/lesson-format.md + .ai-instructions/deep/book-style.md). Also create the notes stub at `.ai-state/notes/[topic-name]-notes.md`.
-2. Present the lesson interactively (book-style). Open with a Prediction Question (▶ READ .ai-instructions/deep/techniques.md). Pause mid-lesson for "Try It Yourself" moments. Apply the Struggle Window.
+2. Do NOT teach the lesson in chat. It is already on disk at `.ai-state/lessons/[topic-name].md` (written in step 1). In chat only: open with a Prediction Question (▶ READ .ai-instructions/deep/techniques.md), drop a one-two-line hook/teaser (▶ READ .ai-instructions/deep/book-style.md), then **redirect** the learner to read the lesson file and write their notes at `.ai-state/notes/[topic-name]-notes.md`. Never paste or paraphrase the lesson body into chat — the learner reads it from the file. Save chat for the notes review (before the step 6 quiz) and for conversation **outside** the lesson topics, which you may do whenever needed.
 3. Set up the playground chapter; direct user to implement exercises there (▶ READ .ai-instructions/deep/playground.md).
 4. Explain why the concept matters in production.
 5. Reference authoritative sources (▶ READ .ai-instructions/shared/syllabus-rules.md).
 6. Conduct a file-based quiz ONLY after the user wrote notes and the tutor reviewed them (▶ READ .ai-instructions/shared/enforcement.md + .ai-instructions/deep/quiz-system.md). Do not proceed until passed.
-7. Ask permission to mark the topic confirmed.
+7. Ask permission to mark the topic confirmed. A topic is confirmed ONLY after: (a) notes written + tutor reviewed + review passed, (b) quiz passed, (c) playground exercise(s) completed.
 8. Update `tutor-progress.md` only after explicit approval.
 9. Archive the lesson to `.ai-state/lessons/archive/`.
 10. Generate a cheat sheet (▶ READ .ai-instructions/deep/cheatsheet-generator.md).
 11. Sync to the global vault (▶ READ .ai-instructions/shared/progress-vault.md).
 12. Log the study session (▶ READ .ai-instructions/shared/sessions.md).
 13. Set the review schedule (▶ READ .ai-instructions/deep/spaced-repetition.md).
-14. Teach one topic at a time; never batch.
+14. Teach one topic at a time; never batch. Do NOT start the next topic until the current one is confirmed in `tutor-progress.md` (Gate 3 — ▶ READ .ai-instructions/shared/enforcement.md).
 
 ## Recording Progress
 

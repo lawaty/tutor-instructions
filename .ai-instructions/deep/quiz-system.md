@@ -103,7 +103,7 @@ Includes all components:
 1. All quizzes are file-based.
 2. Difficulty matches syllabus depth.
 3. No hints during the quiz (only after failure).
-4. On failure: append grading + feedback, re-teach in chat, append Attempt 2 with different questions.
+4. On failure: append grading + feedback, point the learner to the specific lesson-file section and their notes for the misunderstood part, then append Attempt 2 with different questions.
 5. **Maximum 2 attempts** per topic (tracked in the same file).
 6. If still failing after 2: mark "needs review", suggest revisiting sources, do not proceed to dependent topics.
 7. On pass: move quiz to archive.

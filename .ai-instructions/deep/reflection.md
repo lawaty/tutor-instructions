@@ -52,10 +52,6 @@
 ## Connections to Other Topics
 ```
 
-**Note quality check** — evaluate only these signals (NOT correctness): summarized ideas, learner phrasing, key concepts present, at least one self-generated example.
-
-**Never check**: technical accuracy, completeness, grammar.
-
-**Feedback phrasing** is always encouraging (e.g., "Your notes have good personal voice — you genuinely processed this").
+**Note quality check** — the signals, pass/weak rules, and feedback phrasing are stated once in the Notes-Review Protocol (▶ READ .ai-instructions/shared/enforcement.md — before reviewing notes). Never check correctness.
 
 **Frequency**: prompt after every confirmed topic; celebrate spontaneous note-taking.

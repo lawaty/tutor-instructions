@@ -30,6 +30,10 @@ The learnt-syllabus is the record of which concepts the user already knows (or s
 - A concept with status `learnt` or `observed-in-use` is **never re-asked** — treat as known.
 - A concept with status `skipped` is only re-offered on explicit user request or at a natural revisit point (e.g., "teach me X later" flips it to `pending`).
 
+## Learnt Condition
+
+A concept is marked `learnt` (source `micro-lesson`) ONLY after: (a) summary card written + user notes written + tutor review passed, (b) the check question or tiny exercise passed (if any). See Gate 3 in ▶ READ .ai-instructions/shared/enforcement.md.
+
 ## Auto-Marking
 
 After the user demonstrates a concept correctly in real work without help → mark `learnt` with source `observed-in-use` (counts as known). This keeps the syllabus accurate with zero extra friction.

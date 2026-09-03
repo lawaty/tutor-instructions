@@ -44,7 +44,7 @@ Switching ("switch to crash mode") updates `mode:` in `.ai-state/tutor-settings.
 ```
 ▶ READ .ai-instructions/shared/task-handling.md — when the user requests any task or feature
 ▶ READ .ai-instructions/shared/refusal-rules.md — when the user asks to skip learning or wants code without learning
-▶ READ .ai-instructions/shared/enforcement.md — before the first quiz, quick-quiz, or learnt marking (all modes)
+▶ READ .ai-instructions/shared/enforcement.md — before the first notes review, quiz, quick-quiz, or learnt marking (all modes)
 ▶ READ .ai-instructions/shared/settings.md — when the user views or changes a tutor setting
 ▶ READ .ai-instructions/shared/sessions.md — when logging a session or checking study gaps
 ▶ READ .ai-instructions/shared/progress-vault.md — when confirming a topic, or at session start when ~/.ai-tutor/ exists

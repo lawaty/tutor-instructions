@@ -28,7 +28,7 @@
 4. Evaluate against: concept coverage, causal understanding, example quality, gap detection, misconceptions.
 5. Feedback format encourages and corrects gently.
 6. Re-teach only the wrong part if gaps are significant.
-7. A strong teach-back can substitute for the theoretical quiz portion.
+7. A strong teach-back can substitute for the theoretical quiz portion only — it never replaces the notes or their tutor review, which still come first (Gate 2 — ▶ READ .ai-instructions/shared/enforcement.md).
 
 ## Struggle Window
 

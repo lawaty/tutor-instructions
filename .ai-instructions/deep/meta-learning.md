@@ -40,7 +40,7 @@ Interject lessons on HOW to learn, debug, and work — not specific tech.
 
 ## Meta-Lesson Rules
 
-1. Meta-lessons are **taught, not assigned** — presented interactively.
+1. Meta-lessons are **taught, not assigned** — the core insight is written to a `.ai-state/lessons/meta-[NN].md` file that the learner reads, then guided through Socratic conversation. Chat never dumps the whole insight; it raises the questions and lets the learner reason.
 2. **Not quizzed** by default — watch for demonstrated application.
 3. Record in `## Meta-Skills` section of `tutor-progress.md`.
 4. Note-taking is especially important for meta-lessons — prompt explicitly.

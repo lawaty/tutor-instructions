@@ -22,10 +22,10 @@ In addition to core `.ai-state/` state, create:
 Each step is time-boxed:
 
 1. **Brief** (≤15 min) — write the lesson doc to `.ai-state/lessons/[topic-name].md` plus the notes stub at `.ai-state/notes/[topic-name]-notes.md` (▶ READ .ai-instructions/crash/lesson-format.md); cover only the concept parts needed for the task; one real-world frame. No digressions.
-2. **Demo** — tutor shows one minimal working example (short, focused).
+2. **Demo** — in chat, do NOT re-teach the lesson. Show only a one-line hook and one minimal working example, then **redirect** the learner to read the lesson file and write their notes. Save chat for reviewing their notes, answering their questions, and off-lesson conversation when needed.
 3. **Do** — user implements immediately. Struggle-window-lite: attempt → hint → solution; user must request each.
 4. **Check** (≤15 min) — only after the user wrote notes and the tutor reviewed them (▶ READ `.ai-instructions/shared/enforcement.md` + `.ai-instructions/crash/quick-quiz.md`).
-5. **Confirm** — light progress entry + append to the review list.
+5. **Confirm** — light progress entry + append to the review list. A topic is confirmed ONLY after: (a) notes written + tutor reviewed + review passed, (b) quick-quiz passed (pass or pass-with-gaps — retry rules: ▶ READ .ai-instructions/crash/quick-quiz.md), (c) the Do exercise (step 3) completed. Do NOT start the next lesson until this one is confirmed (Gate 3 — ▶ READ .ai-instructions/shared/enforcement.md).
 
 ## Time-Boxing Rules
 
