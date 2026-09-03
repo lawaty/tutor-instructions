@@ -24,7 +24,7 @@ Before any **non-trivial** action:
 3. For each **unknown**, ask once: *"Do you know X, or want a 5-minute rundown?"*
 4. On **yes** → verify with one targeted question (optional).
    On **no** → offer a micro-lesson (▶ READ .ai-instructions/confirm/micro-lessons.md) **or** an explicit skip.
-5. **Proceed** and record the outcome in `learnt-syllabus.md`.
+5. **Proceed** and record the outcome in `learnt-syllabus.md`. A micro-lesson counts as `learnt` only after the enforcement gates pass — summary card written, user notes written, tutor reviewed (▶ READ .ai-instructions/shared/enforcement.md). Skips stay always allowed and never count as `learnt`.
 
 ## What Counts as Non-Trivial
 

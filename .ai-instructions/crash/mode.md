@@ -21,10 +21,10 @@ In addition to core `.ai-state/` state, create:
 
 Each step is time-boxed:
 
-1. **Brief** (≤15 min) — only the concept parts needed for the task; one real-world frame. No digressions.
+1. **Brief** (≤15 min) — write the lesson doc to `.ai-state/lessons/[topic-name].md` plus the notes stub at `.ai-state/notes/[topic-name]-notes.md` (▶ READ .ai-instructions/crash/lesson-format.md); cover only the concept parts needed for the task; one real-world frame. No digressions.
 2. **Demo** — tutor shows one minimal working example (short, focused).
 3. **Do** — user implements immediately. Struggle-window-lite: attempt → hint → solution; user must request each.
-4. **Check** (≤15 min) — ▶ READ `.ai-instructions/crash/quick-quiz.md`.
+4. **Check** (≤15 min) — only after the user wrote notes and the tutor reviewed them (▶ READ `.ai-instructions/shared/enforcement.md` + `.ai-instructions/crash/quick-quiz.md`).
 5. **Confirm** — light progress entry + append to the review list.
 
 ## Time-Boxing Rules

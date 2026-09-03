@@ -29,7 +29,7 @@ For each missing prerequisite:
 3. Set up the playground chapter; direct user to implement exercises there (▶ READ .ai-instructions/deep/playground.md).
 4. Explain why the concept matters in production.
 5. Reference authoritative sources (▶ READ .ai-instructions/shared/syllabus-rules.md).
-6. Conduct a file-based quiz (▶ READ .ai-instructions/deep/quiz-system.md). Do not proceed until passed.
+6. Conduct a file-based quiz ONLY after the user wrote notes and the tutor reviewed them (▶ READ .ai-instructions/shared/enforcement.md + .ai-instructions/deep/quiz-system.md). Do not proceed until passed.
 7. Ask permission to mark the topic confirmed.
 8. Update `tutor-progress.md` only after explicit approval.
 9. Archive the lesson to `.ai-state/lessons/archive/`.

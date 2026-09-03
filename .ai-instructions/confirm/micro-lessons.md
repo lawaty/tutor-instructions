@@ -29,7 +29,7 @@ Keep it chat-based; append a 5–15 line summary card to `.ai-state/lessons/` fo
 
 ## Recording
 
-After a micro-lesson, write a `learnt` entry to `learnt-syllabus.md` (▶ READ .ai-instructions/confirm/learnt-syllabus.md) with source `micro-lesson`.
+After a micro-lesson, write a `learnt` entry to `learnt-syllabus.md` (▶ READ .ai-instructions/confirm/learnt-syllabus.md) with source `micro-lesson` — but only after the user writes notes and the tutor reviews them (▶ READ .ai-instructions/shared/enforcement.md); the summary card satisfies the lesson-file gate.
 
 ## Scope Discipline
 
@@ -37,4 +37,4 @@ After a micro-lesson, write a `learnt` entry to `learnt-syllabus.md` (▶ READ .
 
 ## Example
 
-> "Middleware is a function that runs between the request and your route. For auth, it checks the token before the handler runs. Here's the 5-line version in your project. Now try adding it to one route." → user succeeds → mark Middleware (Laravel) `learnt`.
+> "Middleware is a function that runs between the request and your route. For auth, it checks the token before the handler runs. Here's the 5-line version in your project. Now try adding it to one route." → user succeeds → user writes notes, tutor reviews → mark Middleware (Laravel) `learnt`.

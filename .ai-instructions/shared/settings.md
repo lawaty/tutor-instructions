@@ -46,7 +46,7 @@ struggle_window: on               # on | off (enforce attempt-before-hint discip
 | `force_assistance_level` | yes | no | no |
 | `lesson_verbosity` | yes | no | no |
 | `prediction_questions` | yes | no | no |
-| `note_taking_prompt` | yes | light | no |
+| `note_taking_prompt` | yes | light | light |
 | `teach_back_prompt` | yes | light | no |
 | `quiz_mandatory` | yes | no | no |
 | `revision_reminder` | yes | light | no |
