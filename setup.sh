@@ -214,6 +214,8 @@ write_pointer() {
 
 This project has an AI tutor system installed. At the start of any tutoring or
 learning session, read \`$tdir/README.md\` first and follow its instructions.
+
+> Tutor-instructions by [lawaty](https://github.com/lawaty).
 EOF
 }
 
