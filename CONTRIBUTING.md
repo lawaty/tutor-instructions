@@ -8,7 +8,7 @@ Thank you for your interest in contributing! This project provides a mode-based 
 tutor-instructions/
 ├── AGENT.md              # Repo entry point (thin pointer to the router)
 ├── setup.sh              # Installer (conflict-safe entry-point creation)
-├── tutor/                # The shipped instruction tree
+├── .ai-instructions/        # The shipped instruction tree
 │   ├── README.md         # The router — the single source for routing logic
 │   ├── shared/           # Cross-mode logic
 │   ├── deep/  crash/  confirm/   # The three modes
@@ -20,7 +20,7 @@ tutor-instructions/
 
 The system keeps context small by **lazy-loading** instructions. This is the core of the design — preserve it:
 
-1. Every on-demand reference uses a directive: `▶ READ tutor/deep/quiz-system.md — before creating any quiz file`.
+1. Every on-demand reference uses a directive: `▶ READ .ai-instructions/deep/quiz-system.md — before creating any quiz file`.
 2. Paths are relative to the project root (where the pointer files live).
 3. When a trigger is met, read the file BEFORE continuing the current step.
 4. Never preload the whole tree; load only on trigger.
@@ -28,18 +28,18 @@ The system keeps context small by **lazy-loading** instructions. This is the cor
 
 ### Rules for Contributors
 
-- **Line budgets**: `tutor/README.md` (the router) ≤ 200 lines; every other file in `tutor/` ≤ 300 lines.
+- **Line budgets**: `.ai-instructions/README.md` (the router) ≤ 200 lines; every other file in `.ai-instructions/` ≤ 300 lines.
 - Every file must start with the standard 3-line header (title, load source/trigger, applies-to).
-- Every new file must be **reachable via a `▶ READ` chain from `tutor/README.md`** — no orphan files.
+- Every new file must be **reachable via a `▶ READ` chain from `.ai-instructions/README.md`** — no orphan files.
 - Use standard markdown headings (`##`/`###`), not decorative rule lines.
 - Keep each mode **self-contained**: shared logic lives in `shared/`; modes only calibrate it. Do not duplicate shared logic into mode files.
 
 ### Reference Check
 
-After changing files, run this to confirm every `▶ READ` target exists (the `tutor/<mode>/mode.md` placeholder in the router is intentional):
+After changing files, run this to confirm every `▶ READ` target exists (the `.ai-instructions/<mode>/mode.md` placeholder in the router is intentional):
 
 ```bash
-grep -rhoP '▶ READ *\`?\K[^` —）).:]+(?:\.[a-z]+)' AGENT.md tutor/ | sort -u | while read -r f; do
+grep -rhoP '▶ READ *\`?\K[^` —）).:]+(?:\.[a-z]+)' AGENT.md .ai-instructions/ | sort -u | while read -r f; do
     [[ "$f" == *"/"* ]] && { [ -f "$f" ] || echo "MISSING: $f"; }
 done
 ```
@@ -60,7 +60,7 @@ Use GitHub Issues; provide clear descriptions, the mode involved, and expected v
 ### 3. Improve Instructions / New Modes
 - Discuss major changes in an issue first
 - Ensure new files follow the `▶ READ` convention and line budgets
-- Update `tutor/README.md`’s file index if you add files
+- Update `.ai-instructions/README.md`’s file index if you add files
 - Update docs (README, INSTALL, QUICKSTART) and `setup.sh` if you add entry points or flags
 
 ### 4. Documentation
@@ -69,7 +69,7 @@ Fix typos, improve setup instructions, add examples.
 ## Guidelines
 
 ### Philosophy
-- **Understanding over speed**, **Files over memory**, **Mastery over completion**, **Production realism** — the 13 principles live in `tutor/shared/principles.md`.
+- **Understanding over speed**, **Files over memory**, **Mastery over completion**, **Production realism** — the 13 principles live in `.ai-instructions/shared/principles.md`.
 - Small contexts matter: never overload a model with the whole tree.
 
 ### Code Style
@@ -82,7 +82,7 @@ Fix typos, improve setup instructions, add examples.
 mkdir /tmp/tutor-test && cd /tmp/tutor-test && git init
 /path/to/tutor-instructions/setup.sh --yes --dry-run
 /path/to/tutor-instructions/setup.sh --yes        # real install
-ls AGENT.md AGENTS.md tutor/
+ls AGENT.md AGENTS.md .ai-instructions/
 # Conflict scenarios: create your own AGENT.md first, re-run, confirm it's preserved
 ```
 
@@ -93,8 +93,8 @@ Example:
 ```
 Restructure tutor system into three modes
 
-- Split monolith into tutor/{shared,deep,crash,confirm}
-- Add lazy-load router at tutor/README.md
+- Split monolith into .ai-instructions/{shared,deep,crash,confirm}
+- Add lazy-load router at .ai-instructions/README.md
 - Rewrite setup.sh for conflict-safe entry points
 ```
 

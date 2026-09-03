@@ -17,29 +17,29 @@ bash <(curl -fsSL https://raw.githubusercontent.com/lawaty/tutor-instructions/ma
 
 ### On Fresh Install
 
-1. Installs the `tutor/` instruction tree at your project root
+1. Installs the `.ai-instructions/` instruction tree at your project root
 2. Creates entry-point files (`AGENT.md` + `AGENTS.md`), safely handling any that already exist
-3. Creates `.ai/` state directories
+3. Creates `.ai-state/` state directories
 4. Initializes the global progress vault at `~/.ai-tutor/`
-5. Creates `.ai/tutor-settings.md` (with your chosen `mode`)
-6. Adds `.ai/tutor-progress.md` to `.gitignore`
+5. Creates `.ai-state/tutor-settings.md` (with your chosen `mode`)
+6. Adds `.ai-state/tutor-progress.md` to `.gitignore`
 
 ### On Update (Existing Install Detected)
 
-The installer checks ownership of every instruction file and updates only the ones this system owns, preserving all your `.ai/` state and the global vault. Re-runs are idempotent — no duplicate content.
+The installer checks ownership of every instruction file and updates only the ones this system owns, preserving all your `.ai-state/` state and the global vault. Re-runs are idempotent — no duplicate content.
 
 ## Options / Flags
 
 | Flag | Effect |
 | ---- | ------ |
-| `--mode=deep\|crash\|confirm` | Set the tutor mode (seeds/updates `.ai/tutor-settings.md`) |
+| `--mode=deep\|crash\|confirm` | Set the tutor mode (seeds/updates `.ai-state/tutor-settings.md`) |
 | `--dir=NAME` | Use a custom instruction directory (default `tutor`) |
 | `--frameworks=claude,cursor,copilot,gemini,all` | Also create pointers for Claude, Cursor, Copilot, or Gemini |
 | `--append` | On conflict, append the pointer block to user-owned files without prompting |
 | `--no-modify` | Never modify user-owned files — print a manual snippet instead |
 | `--yes` | Non-interactive; use safe defaults (no prompts) |
 | `--dry-run` | Show everything that would happen; change nothing |
-| `--uninstall` | Remove the tutor system (keeps `.ai/` state and vault) |
+| `--uninstall` | Remove the tutor system (keeps `.ai-state/` state and vault) |
 | `--strict` | Exit non-zero if any entry point was skipped |
 
 ## Conflict Handling
@@ -79,13 +79,13 @@ After setup, verify:
 
 ```bash
 ls AGENT.md AGENTS.md
-ls tutor/
+ls .ai-instructions/
 ```
 
 You should see:
 - `AGENT.md` / `AGENTS.md` (thin pointers)
-- `tutor/README.md` and the mode subdirectories
-- `.ai/tutor-settings.md`
+- `.ai-instructions/README.md` and the mode subdirectories
+- `.ai-state/tutor-settings.md`
 
 ## What Gets Preserved on Update
 
@@ -93,16 +93,16 @@ The installer **never deletes or overwrites your data**:
 
 | Item | Behavior |
 | ---- | -------- |
-| `.ai/tutor-syllabus.md` | ✅ Preserved |
-| `.ai/tutor-progress.md` | ✅ Preserved |
-| `.ai/learnt-syllabus.md` | ✅ Preserved |
-| `.ai/lessons/`, `quizzes/`, `playground/`, etc. | ✅ Preserved |
+| `.ai-state/tutor-syllabus.md` | ✅ Preserved |
+| `.ai-state/tutor-progress.md` | ✅ Preserved |
+| `.ai-state/learnt-syllabus.md` | ✅ Preserved |
+| `.ai-state/lessons/`, `quizzes/`, `playground/`, etc. | ✅ Preserved |
 | `~/.ai-tutor/` vault | ✅ Preserved |
 | Your own AGENT/CLAUDE/etc. content | ✅ Preserved (pointer appended, never replacing) |
 
 ## Next Steps
 
-1. Edit `.ai/tutor-settings.md` to choose your `mode` (deep / crash / confirm)
-2. For Deep/Crash, customize `.ai/tutor-syllabus.md` for your tech stack
+1. Edit `.ai-state/tutor-settings.md` to choose your `mode` (deep / crash / confirm)
+2. For Deep/Crash, customize `.ai-state/tutor-syllabus.md` for your tech stack
 3. Start talking to your agent — it will now act as a tutor
-4. Commit `AGENT.md`, `AGENTS.md`, and `tutor/` so your team shares the tutor (`.ai/tutor-progress.md` stays gitignored)
+4. Commit `AGENT.md`, `AGENTS.md`, and `.ai-instructions/` so your team shares the tutor (`.ai-state/tutor-progress.md` stays gitignored)

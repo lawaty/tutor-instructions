@@ -8,7 +8,7 @@ Run this from your project root — works for **both** fresh installs and update
 bash <(curl -fsSL https://raw.githubusercontent.com/lawaty/tutor-instructions/main/setup.sh)
 ```
 
-On a fresh project it sets everything up: `tutor/` tree + `AGENT.md`/`AGENTS.md` pointers. On an existing install it safely updates only what it owns, preserving `.ai/` state and the vault. It never overwrites your existing instruction files.
+On a fresh project it sets everything up: `.ai-instructions/` tree + `AGENT.md`/`AGENTS.md` pointers. On an existing install it safely updates only what it owns, preserving `.ai-state/` state and the vault. It never overwrites your existing instruction files.
 
 ### Choose Your Mode
 
@@ -17,7 +17,7 @@ On a fresh project it sets everything up: `tutor/` tree + `AGENT.md`/`AGENTS.md`
 bash <(curl -fsSL https://raw.githubusercontent.com/lawaty/tutor-instructions/main/setup.sh) --mode=confirm
 
 # Or switch anytime in chat / settings
-edit .ai/tutor-settings.md   # mode: deep | crash | confirm
+edit .ai-state/tutor-settings.md   # mode: deep | crash | confirm
 ```
 
 - **deep** — full lessons, quizzes, spaced repetition (default)
@@ -49,7 +49,7 @@ After setup, try this with your AI assistant:
 ## Customization
 
 ### Change Tech Stack (Deep/Crash)
-Edit `.ai/tutor-syllabus.md`:
+Edit `.ai-state/tutor-syllabus.md`:
 ```md
 ## Authoritative Sources
 Primary: "Your Favorite Book"
@@ -61,7 +61,7 @@ Secondary: Official Docs
 ```
 
 ### Check Known Concepts (Confirm)
-Edits happen automatically in `.ai/learnt-syllabus.md` — view it to see what you've marked learnt vs. skipped.
+Edits happen automatically in `.ai-state/learnt-syllabus.md` — view it to see what you've marked learnt vs. skipped.
 
 ### Other Projects
 Run the same command in each project. Progress carries across via `~/.ai-tutor/` (opt-in).
@@ -71,12 +71,12 @@ Run the same command in each project. Progress carries across via `~/.ai-tutor/`
 ## Troubleshooting
 
 ### "Agent not acting as tutor"
-- Verify `AGENT.md` (or `AGENTS.md`) exists and points to `tutor/README.md`
+- Verify `AGENT.md` (or `AGENTS.md`) exists and points to `.ai-instructions/README.md`
 - Confirm your agent reads that instruction file (some use `AGENTS.md` — we create both by default)
 - Restart your agent/session
 
 ### "Mode not applied"
-- Check `mode:` in `.ai/tutor-settings.md`
+- Check `mode:` in `.ai-state/tutor-settings.md`
 - Or just say "switch to crash mode" in chat
 
 ### "Syllabus not auto-generated"
@@ -86,7 +86,7 @@ Run the same command in each project. Progress carries across via `~/.ai-tutor/`
 
 ### "Progress not tracking"
 - Check the relevant file exists (`tutor-progress.md` for Deep/Crash, `learnt-syllabus.md` for Confirm)
-- Agent needs write permission to `.ai/`
+- Agent needs write permission to `.ai-state/`
 
 ### "Existing AGENT.md was mine and got modified?"
 - It wasn't overwritten — at most a small marked pointer block was appended to the end. Remove that block to revert, or see `--no-modify`.

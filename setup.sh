@@ -18,8 +18,9 @@ NC='\033[0m'
 # ---- Defaults ----
 PROJECT_ROOT="$(pwd)"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TUTOR_DIR_NAME="tutor"
+TUTOR_DIR_NAME=".ai-instructions"
 TUTOR_DIR="$PROJECT_ROOT/$TUTOR_DIR_NAME"
+STATE_DIR="$PROJECT_ROOT/.ai-state"
 ENTRY_MARKER="tutor-system:entry"
 INCLUDE_START="tutor-system:include:start"
 INCLUDE_END="tutor-system:include:end"
@@ -50,7 +51,7 @@ Options:
   --no-modify                 Never modify user-owned files (print manual snippet instead)
   --yes                       Non-interactive; use safe defaults (no prompts)
   --dry-run                   Show what would happen, change nothing
-  --uninstall                 Remove the tutor system (keeps .ai/ state and vault)
+  --uninstall                 Remove the tutor system (keeps .ai-state/ and vault)
   --strict                    Fail with non-zero exit if any entry point was skipped
   -h|--help                   Show this help
 EOF
@@ -101,7 +102,7 @@ confirm() {
 # tree must come from a tarball.
 # Note: source always comes from the repo's canonical "tutor" dir regardless of
 # --dir=NAME, which only changes the target directory name in the project.
-SOURCE_TUTOR="$SCRIPT_DIR/tutor"
+SOURCE_TUTOR="$SCRIPT_DIR/.ai-instructions"
 NEED_TARBALL=0
 if [[ ! -d "$SOURCE_TUTOR" || ! -f "$SOURCE_TUTOR/README.md" ]]; then
     NEED_TARBALL=1
@@ -123,7 +124,7 @@ fetch_tree() {
     fi
     tar -xzf "$tmp/tutor.tar.gz" -C "$tmp" --strip-components=1
     mkdir -p "$(dirname "$dest")"
-    cp -R "$tmp/tutor" "$dest"
+    cp -R "$tmp/.ai-instructions" "$dest"
 }
 
 ensure_installed_tree() {
@@ -139,7 +140,7 @@ ensure_installed_tree() {
 
 # ---- Uninstall ----
 do_uninstall() {
-    echo "🗑️  Uninstalling tutor system (keeps .ai/ state and ~/.ai-tutor/)..."
+    echo "🗑️  Uninstalling tutor system (keeps .ai-state/ and ~/.ai-tutor/)..."
 
     # Remove entry points we own / strip include blocks
     for f in AGENT.md AGENTS.md agents.md CLAUDE.md GEMINI.md .github/copilot-instructions.md .cursor/rules/tutor.mdc .cursorrules; do
@@ -163,14 +164,16 @@ do_uninstall() {
         echo "  removed $TUTOR_DIR_NAME/"
     fi
 
-    # Remove legacy monolith if ours
-    if [[ -f "$PROJECT_ROOT/.ai/tutor-instructions.md" ]] && head -n 1 "$PROJECT_ROOT/.ai/tutor-instructions.md" | grep -q "$LEGACY_HEADER"; then
-        [[ "$DRY_RUN" -eq 0 ]] && rm -f "$PROJECT_ROOT/.ai/tutor-instructions.md"
-        echo "  removed legacy .ai/tutor-instructions.md"
+    # Remove legacy monolith if ours (old .ai/ path or current .ai-state/)
+    local legacy="${PROJECT_ROOT}/.ai/tutor-instructions.md"
+    [[ -f "$legacy" ]] || legacy="$STATE_DIR/tutor-instructions.md"
+    if [[ -f "$legacy" ]] && head -n 1 "$legacy" | grep -q "$LEGACY_HEADER"; then
+        [[ "$DRY_RUN" -eq 0 ]] && rm -f "$legacy"
+        echo "  removed legacy $legacy"
     fi
 
     echo ""
-    echo "✅ Uninstall complete. Your learning state remains in .ai/ and ~/.ai-tutor/."
+    echo "✅ Uninstall complete. Your learning state remains in .ai-state/ and ~/.ai-tutor/."
     exit 0
 }
 
@@ -393,22 +396,24 @@ for slot in "${slots[@]:2}"; do
 done
 
 # ---- Phase 3: legacy migration ----
-# Remove legacy monolith inside .ai/ after tree installed (ours only)
-if [[ -f "$PROJECT_ROOT/.ai/tutor-instructions.md" ]] && head -n 1 "$PROJECT_ROOT/.ai/tutor-instructions.md" | grep -q "$LEGACY_HEADER"; then
+# Remove legacy monolith after tree installed (ours only) — old .ai/ or .ai-state/
+LEGACY_MONO="$STATE_DIR/tutor-instructions.md"
+[[ -f "$LEGACY_MONO" ]] || LEGACY_MONO="$PROJECT_ROOT/.ai/tutor-instructions.md"
+if [[ -f "$LEGACY_MONO" ]] && head -n 1 "$LEGACY_MONO" | grep -q "$LEGACY_HEADER"; then
     if [[ "$DRY_RUN" -eq 0 ]]; then
-        rm -f "$PROJECT_ROOT/.ai/tutor-instructions.md"
-        echo -e "${GREEN}✓ removed legacy .ai/tutor-instructions.md (superseded by $TUTOR_DIR_NAME/)${NC}"
+        rm -f "$LEGACY_MONO"
+        echo -e "${GREEN}✓ removed legacy $LEGACY_MONO (superseded by $TUTOR_DIR_NAME/)${NC}"
     else
-        echo -e "${YELLOW}→ would remove legacy .ai/tutor-instructions.md${NC}"
+        echo -e "${YELLOW}→ would remove legacy $LEGACY_MONO${NC}"
     fi
 fi
 
 # ---- Phase 4: state setup ----
 echo ""
 echo "📂 Setting up state..."
-mkdir -p "$PROJECT_ROOT/.ai/lessons"
-mkdir -p "$PROJECT_ROOT/.ai/lessons/archive"
-mkdir -p "$PROJECT_ROOT/.ai/cheatsheets"
+mkdir -p "$STATE_DIR/lessons"
+mkdir -p "$STATE_DIR/lessons/archive"
+mkdir -p "$STATE_DIR/cheatsheets"
 
 # Global vault
 VAULT_DIR="$HOME/.ai-tutor"
@@ -445,7 +450,7 @@ else
 fi
 
 # Settings seeding
-SETTINGS="$PROJECT_ROOT/.ai/tutor-settings.md"
+SETTINGS="$STATE_DIR/tutor-settings.md"
 if [[ ! -f "$SETTINGS" ]]; then
     if [[ "$DRY_RUN" -eq 0 ]]; then
         cat > "$SETTINGS" <<EOF
@@ -453,9 +458,9 @@ if [[ ! -f "$SETTINGS" ]]; then
 mode: $MODE
 study_gap_threshold_days: 3
 EOF
-        echo -e "${GREEN}✅ Created .ai/tutor-settings.md (mode: $MODE)${NC}"
+        echo -e "${GREEN}✅ Created $SETTINGS (mode: $MODE)${NC}"
     else
-        echo -e "${YELLOW}→ would create .ai/tutor-settings.md (mode: $MODE)${NC}"
+        echo -e "${YELLOW}→ would create $SETTINGS (mode: $MODE)${NC}"
     fi
 elif [[ -n "$MODE" && "$MODE" != "deep" ]]; then
     # update mode line if explicitly requested via --mode
@@ -470,22 +475,22 @@ elif [[ -n "$MODE" && "$MODE" != "deep" ]]; then
         echo -e "${YELLOW}→ would set mode: $MODE in settings${NC}"
     fi
 else
-    echo -e "${BLUE}ℹ️  .ai/tutor-settings.md preserved${NC}"
+    echo -e "${BLUE}ℹ️  $SETTINGS preserved${NC}"
 fi
 
 # .gitignore
 GITIGNORE="$PROJECT_ROOT/.gitignore"
 if [[ "$DRY_RUN" -eq 0 ]]; then
     if [[ -f "$GITIGNORE" ]]; then
-        if ! grep -q ".ai/tutor-progress.md" "$GITIGNORE"; then
+        if ! grep -q "\.ai-state/" "$GITIGNORE"; then
             echo "" >> "$GITIGNORE"
-            echo "# AI Tutor Progress (personal)" >> "$GITIGNORE"
-            echo ".ai/tutor-progress.md" >> "$GITIGNORE"
-            echo -e "${GREEN}✅ Added .ai/tutor-progress.md to .gitignore${NC}"
+            echo "# AI Tutor state (personal — never commit)" >> "$GITIGNORE"
+            echo ".ai-state/" >> "$GITIGNORE"
+            echo -e "${GREEN}✅ Added .ai-state/ to .gitignore${NC}"
         fi
     else
-        echo "# AI Tutor Progress (personal)" > "$GITIGNORE"
-        echo ".ai/tutor-progress.md" >> "$GITIGNORE"
+        echo "# AI Tutor state (personal — never commit)" > "$GITIGNORE"
+        echo ".ai-state/" >> "$GITIGNORE"
         echo -e "${GREEN}✅ Created .gitignore${NC}"
     fi
 else
@@ -499,10 +504,10 @@ echo "✨ AI Tutor Setup Complete! ✨"
 echo "======================================"
 echo ""
 echo "Your coding agent should now act as a tutor. Restart your agent if needed."
-echo "Your .ai/ state and ~/.ai-tutor/ vault are preserved by the installer."
+echo "Your .ai-state/ data and ~/.ai-tutor/ vault are preserved by the installer."
 echo ""
 echo "📦 Tip: commit AGENT.md, AGENTS.md, and $TUTOR_DIR_NAME/ so your team shares the tutor."
-echo "   (.ai/tutor-progress.md stays gitignored as personal state.)"
+echo "   (.ai-state/ stays gitignored as personal state.)"
 echo ""
 
 if [[ "$STRICT" -eq 1 && "$SKIP_COUNT" -gt 0 ]]; then
